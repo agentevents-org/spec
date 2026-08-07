@@ -1,0 +1,18 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "fb455028-a876-430e-a5ff-4b2ece77e827",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:42Z"
+  },
+  "subject": {
+    "id": "run-1234",
+    "content": {
+      "agentName": "research-assistant",
+      "agentVersion": "1.4.2",
+      "url": "https://dashboard.example.com/runs/run-1234",
+      "outcome": "success"
+    }
+  }
+}

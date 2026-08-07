@@ -1,0 +1,21 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "c456-3456-3456",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.modelinvocation.started.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:20Z"
+  },
+  "subject": {
+    "id": "inv-789",
+    "content": {
+      "modelName": "claude-sonnet-5",
+      "modelProvider": "anthropic",
+      "agentRun": {
+        "id": "run-1234",
+        "source": "/staging/my-agent-runtime"
+      },
+      "url": "https://dashboard.example.com/runs/run-1234/invocations/inv-789"
+    }
+  }
+}

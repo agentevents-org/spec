@@ -1,0 +1,19 @@
+{
+  "$id": "agentevents/_defs/toolcall",
+  "term": "ToolCall",
+  "definition": "A ToolCall is a single invocation, by an agent, of a tool or function made available to it.",
+  "notes": [
+    "A ToolCall is not the tool's registration/definition/schema itself",
+    "A ToolCall always belongs to exactly one AgentRun",
+    "A ToolCall may fail, succeed, or be canceled"
+  ],
+  "examples": [
+    "An agent calling a search_web function",
+    "An agent executing a sandboxed code interpreter tool",
+    "An agent invoking another service via an MCP tool call"
+  ],
+  "counterExamples": [
+    "The tool's registration/definition",
+    "A call to the underlying model itself (see ModelInvocation)"
+  ]
+}

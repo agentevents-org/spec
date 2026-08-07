@@ -1,0 +1,19 @@
+{
+  "$id": "agentevents/_defs/agentrun",
+  "term": "AgentRun",
+  "definition": "An AgentRun is a single end-to-end execution of an AI agent, from the moment it starts processing an input to the moment it produces a final result or fails.",
+  "notes": [
+    "An AgentRun is not the agent's definition (prompt, graph, or code) itself",
+    "An AgentRun may fail, succeed, or be canceled",
+    "An AgentRun typically contains one or more ToolCalls and ModelInvocations"
+  ],
+  "examples": [
+    "A LangGraph graph invocation",
+    "A single OpenAI Agents SDK run",
+    "One turn of a customer support agent handling a ticket"
+  ],
+  "counterExamples": [
+    "The agent's system prompt or graph definition",
+    "A single LLM completion call (see ModelInvocation)"
+  ]
+}

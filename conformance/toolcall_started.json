@@ -1,0 +1,20 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "a234-1234-1234",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:12Z"
+  },
+  "subject": {
+    "id": "call-456",
+    "content": {
+      "toolName": "search_web",
+      "agentRun": {
+        "id": "run-1234",
+        "source": "/staging/my-agent-runtime"
+      },
+      "url": "https://dashboard.example.com/runs/run-1234/calls/call-456"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "agentevents-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node validate.js"
+  },
+  "dependencies": {
+    "ajv": "^8.20",
+    "ajv-formats": "^3.0",
+    "glob": "^11.0"
+  }
+}

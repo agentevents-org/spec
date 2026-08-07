@@ -1,0 +1,17 @@
+{
+  "$id": "agentevents/_defs/modelinvocation",
+  "term": "ModelInvocation",
+  "definition": "A ModelInvocation is a single call, by an agent, to an underlying model (typically an LLM) to decide a next action or produce output.",
+  "notes": [
+    "A ModelInvocation always belongs to exactly one AgentRun",
+    "A ModelInvocation may fail, succeed, or be canceled",
+    "Token usage is only meaningful on the finished predicate"
+  ],
+  "examples": [
+    "A single chat completion request to an LLM provider",
+    "A streaming generation call that produces the agent's next action"
+  ],
+  "counterExamples": [
+    "A call to an external tool/function (see ToolCall)"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "271069a8-fc18-44f1-b38f-9d70a1695819",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.agentrun.queued.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:00Z"
+  },
+  "subject": {
+    "id": "run-1234",
+    "content": {
+      "agentName": "research-assistant",
+      "agentVersion": "1.4.2",
+      "url": "https://dashboard.example.com/runs/run-1234"
+    }
+  }
+}
