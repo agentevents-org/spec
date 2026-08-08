@@ -1,0 +1,19 @@
+{
+  "$id": "agentevents/_defs/agenthandoff",
+  "term": "AgentHandoff",
+  "definition": "An AgentHandoff is a single instance of one agent delegating part or all of a task to another agent.",
+  "notes": [
+    "An AgentHandoff connects a sourceAgentRun to a (possibly not-yet-known) targetAgentRun",
+    "An AgentHandoff may fail, succeed, or be canceled",
+    "An AgentHandoff is not itself an AgentRun; it describes the transition between two AgentRuns"
+  ],
+  "examples": [
+    "A supervisor agent routing a request to a specialist agent",
+    "An agent escalating a conversation to a human-facing agent",
+    "One agent invoking another over an agent-to-agent protocol"
+  ],
+  "counterExamples": [
+    "A ToolCall (invoking a function, not another agent)",
+    "The receiving agent's own AgentRun once it has started"
+  ]
+}

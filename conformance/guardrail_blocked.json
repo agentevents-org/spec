@@ -1,0 +1,22 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "h901-8901-8901",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.guardrail.blocked.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:22Z"
+  },
+  "subject": {
+    "id": "guardrail-655",
+    "content": {
+      "guardrailName": "jailbreak-detector",
+      "agentRun": {
+        "id": "run-1234",
+        "source": "/staging/my-agent-runtime"
+      },
+      "severity": "high",
+      "reason": "Prompt injection pattern matched",
+      "url": "https://dashboard.example.com/runs/run-1234/guardrails/guardrail-655"
+    }
+  }
+}

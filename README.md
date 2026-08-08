@@ -32,6 +32,8 @@ The specification is a work in progress. Key documents:
   `modelInvocation`.
 - [`cloudevents-binding.md`](cloudevents-binding.md) — how AgentEvents map onto
   CloudEvents context attributes.
+- [`links.md`](links.md) — how to connect related AgentEvents with `chainId`
+  and `links` (e.g. the `toolCall` that a `modelInvocation` triggered).
 - [`custom/`](custom/README.md) — how frameworks and vendors define
   tool-specific custom events that stay compatible with AgentEvents.
 - [`schemas/`](schemas) — JSON Schema for every event type.
@@ -42,10 +44,10 @@ The specification is a work in progress. Key documents:
 ## Status
 
 This is an early, `0.1.0-draft` specification. Expect breaking changes.
-Planned next steps beyond the core vocabulary: causal links between events
-(e.g. connecting a `toolCall` to the `modelInvocation` that decided to make
-it), a broader vocabulary (agent-to-agent handoffs, guardrail events, memory
-operations, human-in-the-loop approvals), and reference SDKs.
+The core vocabulary covers `agentRun`, `toolCall`, `modelInvocation`,
+`agentHandoff`, and `guardrail`, and events can be connected with causal
+[links](links.md). Planned next steps: a broader vocabulary (memory
+operations, human-in-the-loop approvals) and reference SDKs.
 
 ## License
 

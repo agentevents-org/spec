@@ -2,9 +2,18 @@
   "context": {
     "specversion": "0.1.0-draft",
     "id": "fb455028-a876-430e-a5ff-4b2ece77e827",
+    "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359",
     "source": "/staging/my-agent-runtime",
     "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
-    "timestamp": "2026-08-05T17:31:42Z"
+    "timestamp": "2026-08-05T17:31:42Z",
+    "links": [
+      {
+        "linkType": "END",
+        "from": {
+          "contextId": "a234-1234-1234"
+        }
+      }
+    ]
   },
   "subject": {
     "id": "run-1234",

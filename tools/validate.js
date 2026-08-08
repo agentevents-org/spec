@@ -29,6 +29,7 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
 const EXAMPLES_FOLDER = join(ROOT, "conformance");
 const SCHEMAS_FOLDER = join(ROOT, "schemas");
+const EMBEDDED_LINKS_SCHEMAS_PATTERN = join(ROOT, "schemas/links/*.json");
 
 function loadJSON(filepath) {
   try {
@@ -49,17 +50,49 @@ function createAjv() {
   return ajv;
 }
 
+function loadEmbeddedLinksSchemas() {
+  const schemas = [];
+  const files = globSync(EMBEDDED_LINKS_SCHEMAS_PATTERN);
+  for (const file of files) {
+    schemas.push(loadJSON(file));
+  }
+  return schemas;
+}
+
 function testSchemas() {
   console.log("==> Testing Schema Files");
 
   let schemaFailed = 0;
+  const embeddedLinksSchemas = loadEmbeddedLinksSchemas();
   const eventSchemaFiles = globSync(join(SCHEMAS_FOLDER, "*.json"));
-  const numSchemas = eventSchemaFiles.length + 1; // + custom/schema.json
+  let numSchemas = eventSchemaFiles.length + 1; // + custom/schema.json
 
   for (const schemaFile of eventSchemaFiles) {
     try {
       const ajv = createAjv();
+      for (const schema of embeddedLinksSchemas) {
+        ajv.addSchema(schema);
+      }
       const schema = loadJSON(schemaFile);
+      ajv.compile(schema);
+    } catch (error) {
+      console.error(`Failed to compile ${schemaFile}: ${error.message}`);
+      schemaFailed++;
+    }
+  }
+
+  // Test the links schemas themselves
+  const linkSchemaFiles = globSync(join(SCHEMAS_FOLDER, "links/*.json"));
+  numSchemas += linkSchemaFiles.length;
+  for (const schemaFile of linkSchemaFiles) {
+    try {
+      const ajv = createAjv();
+      const schema = loadJSON(schemaFile);
+      for (const refSchema of embeddedLinksSchemas) {
+        if (refSchema.$id !== schema.$id) {
+          ajv.addSchema(refSchema);
+        }
+      }
       ajv.compile(schema);
     } catch (error) {
       console.error(`Failed to compile ${schemaFile}: ${error.message}`);
@@ -69,6 +102,9 @@ function testSchemas() {
 
   try {
     const ajv = createAjv();
+    for (const schema of embeddedLinksSchemas) {
+      ajv.addSchema(schema);
+    }
     const customSchema = loadJSON(join(ROOT, "custom/schema.json"));
     ajv.compile(customSchema);
   } catch (error) {
@@ -87,6 +123,7 @@ function testConformance() {
   console.log("\n==> Testing Conformance Files");
 
   let exampleFailed = 0;
+  const embeddedLinksSchemas = loadEmbeddedLinksSchemas();
   const exampleFiles = globSync(join(EXAMPLES_FOLDER, "*.json"));
   const numExamples = exampleFiles.length + 1; // + custom/conformance.json
 
@@ -100,6 +137,9 @@ function testConformance() {
 
     try {
       const ajv = createAjv();
+      for (const schema of embeddedLinksSchemas) {
+        ajv.addSchema(schema);
+      }
       const schema = loadJSON(schemaFile);
       const example = loadJSON(exampleFile);
       const validate = ajv.compile(schema);
@@ -122,6 +162,9 @@ function testConformance() {
   process.stdout.write("custom example: ");
   try {
     const ajv = createAjv();
+    for (const schema of embeddedLinksSchemas) {
+      ajv.addSchema(schema);
+    }
     const customSchema = loadJSON(join(ROOT, "custom/schema.json"));
     const customExample = loadJSON(join(ROOT, "custom/conformance.json"));
     const validate = ajv.compile(customSchema);

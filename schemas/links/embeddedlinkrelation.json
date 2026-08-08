@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentevents.dev/0.1.0-draft/schema/links/embeddedlinkrelation",
+  "properties": {
+    "linkType": {
+      "type": "string",
+      "enum": [
+        "RELATION"
+      ]
+    },
+    "linkKind": {
+      "description": "A free-form label for the relationship, e.g. TRIGGER, HANDOFF, GUARDRAIL.",
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "contextId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contextId"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "linkType",
+    "linkKind",
+    "target"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "f789-6789-6789",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.agenthandoff.finished.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:31Z"
+  },
+  "subject": {
+    "id": "handoff-321",
+    "content": {
+      "sourceAgentRun": {
+        "id": "run-1234",
+        "source": "/staging/my-agent-runtime"
+      },
+      "targetAgentName": "billing-specialist",
+      "targetAgentRun": {
+        "id": "run-5678",
+        "source": "/staging/my-agent-runtime"
+      },
+      "reason": "Out of scope for research-assistant",
+      "url": "https://dashboard.example.com/runs/run-1234/handoffs/handoff-321",
+      "outcome": "success"
+    }
+  }
+}

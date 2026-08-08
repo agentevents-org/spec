@@ -35,6 +35,8 @@ AI agents as [CloudEvents][cloudevents-spec].
     - [specversion](#specversion)
   - [OPTIONAL Context Attributes](#optional-context-attributes)
     - [schemaUri](#schemauri)
+    - [chainId](#chainid)
+    - [links](#links)
   - [Context example](#context-example)
 - [AgentEvent subject](#agentevent-subject)
   - [REQUIRED Subject Attributes](#required-subject-attributes)
@@ -290,12 +292,69 @@ events defined in the [vocabulary](#vocabulary):
 - Examples:
   - `https://myorg.com/agentevents/schema/toolcall-finished-0-1-0`
 
-> __Future work__: AgentEvents plans to add a `links` mechanism, similar to
-> [CDEvents links](https://github.com/cdevents/spec/blob/main/links.md), to
-> let producers connect events with causal relationships (for example, a
-> `toolCall` triggered by a `modelInvocation`). See [`links.md`](links.md)
-> for the current placeholder. This is not yet part of the normative
-> specification.
+#### chainId
+
+- Type: [`String`][typesystem]
+- Description: Identifier for a chain of related AgentEvents, as defined in
+  the [links spec](links.md). Typically used to group all events belonging
+  to the same end-to-end trace, for example one user request that spans
+  multiple `agentRun`s connected by `agentHandoff`s.
+
+- Constraints:
+  - OPTIONAL
+- Examples:
+  - A [UUID version 4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))
+
+#### links
+
+- Type: [`List`][typesystem]
+- Description: A list of link objects, as defined in the
+  [links spec](links.md), connecting this event to other AgentEvents with
+  `PATH`, `RELATION`, or `END` relationships.
+
+- Constraints:
+  - OPTIONAL
+
+- Examples:
+  - A relation link indicating that this `toolCall` was triggered by a
+    specific `modelInvocation`:
+
+    ```json
+    [
+      {
+        "linkType": "RELATION",
+        "linkKind": "TRIGGER",
+        "target": {
+          "contextId": "5328c37f-bb7e-4bb7-84ea-9f5f85e4a7ce"
+        }
+      }
+    ]
+    ```
+  - A path link connecting this event to the one that directly preceded it
+    in the same chain:
+
+    ```json
+    [
+      {
+        "linkType": "PATH",
+        "from": {
+          "contextId": "271069a8-fc18-44f1-b38f-9d70a1695819"
+        }
+      }
+    ]
+    ```
+  - An end link signaling that this event ends its chain:
+
+    ```json
+    [
+      {
+        "linkType": "END",
+        "from": {
+          "contextId": "fb455028-a876-430e-a5ff-4b2ece77e827"
+        }
+      }
+    ]
+    ```
 
 ### Context example
 
@@ -475,13 +534,15 @@ type `Object` and has several *attributes* associated; the *event type*
 schema defines which ones are mandatory and which ones are optional.
 
 The current vocabulary is defined in [`core.md`](core.md). It covers the
-minimum set of subjects needed to describe an agent's execution: an
-[`agentRun`](core.md#agentrun), the [`toolCall`](core.md#toolcall)s it makes,
-and the [`modelInvocation`](core.md#modelinvocation)s it performs. Future
-revisions are expected to grow the vocabulary to cover agent-to-agent
-handoffs, guardrail/policy events, memory operations, and human-in-the-loop
-approvals — similar to how [CDEvents grew its vocabulary][cdevents-spec] in
-stages after its initial core release.
+subjects needed to describe an agent's execution: an
+[`agentRun`](core.md#agentrun), the [`toolCall`](core.md#toolcall)s it
+makes, the [`modelInvocation`](core.md#modelinvocation)s it performs,
+[`agentHandoff`](core.md#agenthandoff)s to other agents, and
+[`guardrail`](core.md#guardrail) policy/safety checks against its actions.
+Future revisions are expected to grow the vocabulary further to cover
+memory operations and human-in-the-loop approvals — similar to how
+[CDEvents grew its vocabulary][cdevents-spec] in stages after its initial
+core release.
 
 [cloudevents-spec]: https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md
 [source]: https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#source

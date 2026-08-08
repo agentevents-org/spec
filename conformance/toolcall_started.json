@@ -2,9 +2,19 @@
   "context": {
     "specversion": "0.1.0-draft",
     "id": "a234-1234-1234",
+    "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359",
     "source": "/staging/my-agent-runtime",
     "type": "dev.agentevents.toolcall.started.0.1.0-draft",
-    "timestamp": "2026-08-05T17:31:12Z"
+    "timestamp": "2026-08-05T17:31:12Z",
+    "links": [
+      {
+        "linkType": "RELATION",
+        "linkKind": "TRIGGER",
+        "target": {
+          "contextId": "d567-4567-4567"
+        }
+      }
+    ]
   },
   "subject": {
     "id": "call-456",

@@ -1,0 +1,19 @@
+{
+  "$id": "agentevents/_defs/guardrail",
+  "term": "Guardrail",
+  "definition": "A Guardrail is a single instance of a policy or safety check evaluating an agent's input, output, or proposed action.",
+  "notes": [
+    "A Guardrail always belongs to exactly one AgentRun",
+    "A Guardrail's triggered predicate reports the decision (allow, flag, or block) it reached",
+    "A Guardrail's blocked predicate is emitted in addition to triggered when the action is prevented, for consumers that only care about hard blocks"
+  ],
+  "examples": [
+    "A PII filter redacting or blocking output containing personal data",
+    "A content moderation check on a proposed response",
+    "A jailbreak/prompt-injection detector evaluating an input"
+  ],
+  "counterExamples": [
+    "The guardrail's own configuration or policy definition",
+    "A ToolCall or ModelInvocation being evaluated (see those subjects)"
+  ]
+}

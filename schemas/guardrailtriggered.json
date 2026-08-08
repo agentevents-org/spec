@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentevents.dev/0.1.0-draft/schema/agentrun-started-event",
+  "$id": "https://agentevents.dev/0.1.0-draft/schema/guardrail-triggered-event",
   "properties": {
     "context": {
       "properties": {
@@ -20,9 +20,9 @@
         "type": {
           "type": "string",
           "enum": [
-            "dev.agentevents.agentrun.started.0.1.0-draft"
+            "dev.agentevents.guardrail.triggered.0.1.0-draft"
           ],
-          "default": "dev.agentevents.agentrun.started.0.1.0-draft"
+          "default": "dev.agentevents.guardrail.triggered.0.1.0-draft"
         },
         "timestamp": {
           "type": "string",
@@ -64,10 +64,46 @@
         },
         "content": {
           "properties": {
-            "agentName": {
-              "type": "string"
+            "guardrailName": {
+              "type": "string",
+              "minLength": 1
             },
-            "agentVersion": {
+            "agentRun": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "format": "uri-reference"
+                }
+              },
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "id"
+              ]
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "allow",
+                "flag",
+                "block"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            },
+            "reason": {
               "type": "string"
             },
             "url": {
@@ -76,7 +112,12 @@
             }
           },
           "additionalProperties": false,
-          "type": "object"
+          "type": "object",
+          "required": [
+            "guardrailName",
+            "agentRun",
+            "action"
+          ]
         }
       },
       "additionalProperties": false,

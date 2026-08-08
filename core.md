@@ -11,11 +11,12 @@ description: >
 # Core Events
 
 Core Events include the subjects and predicates needed to describe the
-minimum lifecycle of an AI agent's execution: the agent run itself, the
-tools it calls, and the model invocations it makes. These are the events
-that any agent runtime can emit regardless of framework, and everything
-else in a future, broader vocabulary (handoffs, guardrails, memory,
-human-in-the-loop approval) is expected to build on top of them.
+lifecycle of an AI agent's execution: the agent run itself, the tools it
+calls, the model invocations it makes, delegation to other agents, and
+policy/safety checks against its actions. These are the events that any
+agent runtime can emit regardless of framework, and a future, broader
+vocabulary (memory operations, human-in-the-loop approval) is expected to
+build on top of them.
 
 ## Subjects
 
@@ -24,15 +25,20 @@ moment it starts processing an input to the moment it produces a final
 result (or fails). During a run, an agent typically performs one or more
 *model invocations* (calls to an underlying LLM to decide what to do next
 or to produce a response) and one or more *tool calls* (invocations of
-functions/tools available to the agent). AgentEvents identifies three
+functions/tools available to the agent). It may also delegate to another
+agent (an *agent handoff*) or have its actions evaluated by policy/safety
+checks (*guardrails*). AgentEvents identifies five
 [*subjects*](spec.md#subject): [`agentRun`](#agentrun),
-[`toolCall`](#toolcall), and [`modelInvocation`](#modelinvocation).
+[`toolCall`](#toolcall), [`modelInvocation`](#modelinvocation),
+[`agentHandoff`](#agenthandoff), and [`guardrail`](#guardrail).
 
 | Subject | Description | Predicates |
 |---------|-------------|------------|
 | [`agentRun`](#agentrun) | An instance of an agent's execution | [`queued`](#agentrun-queued), [`started`](#agentrun-started), [`finished`](#agentrun-finished) |
 | [`toolCall`](#toolcall) | An instance of a tool/function invocation by an agent | [`started`](#toolcall-started), [`finished`](#toolcall-finished) |
 | [`modelInvocation`](#modelinvocation) | An instance of a call to an underlying model | [`started`](#modelinvocation-started), [`finished`](#modelinvocation-finished) |
+| [`agentHandoff`](#agenthandoff) | An instance of one agent delegating to another agent | [`started`](#agenthandoff-started), [`finished`](#agenthandoff-finished) |
+| [`guardrail`](#guardrail) | An instance of a policy/safety check evaluating an agent's action | [`triggered`](#guardrail-triggered), [`blocked`](#guardrail-blocked) |
 
 ### `agentRun`
 
@@ -86,6 +92,45 @@ response). A `modelInvocation` is a single instance of such a call.
 | promptTokens | `Integer` | number of tokens in the prompt, OPTIONAL and only meaningful on `finished` | `512` |
 | completionTokens | `Integer` | number of tokens generated, OPTIONAL and only meaningful on `finished` | `128` |
 | totalTokens | `Integer` | total tokens used, OPTIONAL and only meaningful on `finished` | `640` |
+
+### `agentHandoff`
+
+In multi-agent systems, one agent may delegate part or all of a task to
+another agent — for example a supervisor agent routing a request to a
+specialist agent, or an agent escalating to a human-facing agent. An
+`agentHandoff` is a single instance of such a delegation, connecting the
+`agentRun` that initiated the handoff to the (possibly not-yet-known)
+`agentRun` of the receiving agent.
+
+| Field | Type | Description | Examples |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | `handoff-321` |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| sourceAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` initiating the handoff | `{"id": "run-1234"}` |
+| targetAgentName | `String` | The name of the agent being handed off to | `billing-specialist`, `human-escalation` |
+| targetAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` created for the target agent, once known | `{"id": "run-5678"}` |
+| reason | `String` | Why the handoff happened | `Out of scope for research-assistant`, `Escalation requested by user` |
+| url | `URI` | url to view the `agentHandoff` | `https://dashboard.example.com/runs/run-1234/handoffs/handoff-321` |
+| outcome | `String (enum)` | outcome of a finished `agentHandoff` | `success`, `failure`, `cancel`, or `error` |
+| errors | `String` | In case of error, canceled, or failed handoff, details about the failure | `Target agent unavailable`, `Handoff rejected by target agent` |
+
+### `guardrail`
+
+Agent runtimes commonly evaluate policy or safety checks against an agent's
+inputs, outputs, or proposed actions — for example a PII filter, a content
+moderation check, or a jailbreak detector. A `guardrail` is a single
+instance of such a check being evaluated within an `agentRun`.
+
+| Field | Type | Description | Examples |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | `guardrail-654` |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| guardrailName | `String` | The name of the guardrail/policy check | `pii-filter`, `content-moderation`, `jailbreak-detector` |
+| agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | `{"id": "run-1234"}` |
+| action | `String (enum)` | what the guardrail decided to do; REQUIRED on `triggered`, absent on `blocked` (implied `block`) | `allow`, `flag`, or `block` |
+| severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, or `critical` |
+| reason | `String` | human-readable explanation of the check's decision | `Detected email address in output`, `Prompt injection pattern matched` |
+| url | `URI` | url to view the `guardrail` evaluation | `https://dashboard.example.com/runs/run-1234/guardrails/guardrail-654` |
 
 ## Events
 
@@ -214,3 +259,83 @@ A `modelInvocation` has finished, successfully or not.
 | promptTokens | `Integer` | number of tokens in the prompt | |
 | completionTokens | `Integer` | number of tokens generated | |
 | totalTokens | `Integer` | total tokens used | |
+
+### [`agentHandoff started`](conformance/agenthandoff_started.json)
+
+An `agentHandoff` has started; the source agent has decided to delegate to
+another agent, which may not yet have accepted or begun running.
+
+- Event Type: __`dev.agentevents.agenthandoff.started.0.1.0-draft`__
+- Predicate: started
+- Subject: [`agentHandoff`](#agenthandoff)
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | ✅ |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| sourceAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` initiating the handoff | ✅ |
+| targetAgentName | `String` | The name of the agent being handed off to | ✅ |
+| reason | `String` | Why the handoff happened | |
+| url | `URI` | url to the `agentHandoff` | |
+
+### [`agentHandoff finished`](conformance/agenthandoff_finished.json)
+
+An `agentHandoff` has finished: the target agent has accepted (and
+typically started its own `agentRun`) or the handoff failed.
+
+- Event Type: __`dev.agentevents.agenthandoff.finished.0.1.0-draft`__
+- Predicate: finished
+- Subject: [`agentHandoff`](#agenthandoff)
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | ✅ |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| sourceAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` initiating the handoff | ✅ |
+| targetAgentName | `String` | The name of the agent being handed off to | ✅ |
+| targetAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` created for the target agent, when applicable | |
+| reason | `String` | Why the handoff happened | |
+| url | `URI` | url to the `agentHandoff` | |
+| outcome | `String (enum)` | outcome of the `agentHandoff` | `success`, `failure`, `cancel`, `error` |
+| errors | `String` | details about the failure, when applicable | |
+
+### [`guardrail triggered`](conformance/guardrail_triggered.json)
+
+A guardrail/policy check evaluated an agent's input, output, or proposed
+action and reached a decision.
+
+- Event Type: __`dev.agentevents.guardrail.triggered.0.1.0-draft`__
+- Predicate: triggered
+- Subject: [`guardrail`](#guardrail)
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | ✅ |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| guardrailName | `String` | The name of the guardrail/policy check | ✅ |
+| agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | ✅ |
+| action | `String (enum)` | what the guardrail decided to do | `allow`, `flag`, `block` |
+| severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, `critical` |
+| reason | `String` | human-readable explanation of the check's decision | |
+| url | `URI` | url to the `guardrail` evaluation | |
+
+### [`guardrail blocked`](conformance/guardrail_blocked.json)
+
+A guardrail/policy check specifically prevented an agent's input, output, or
+proposed action from proceeding. Emitted in addition to (not instead of) a
+corresponding `triggered` event with `action: "block"`, for consumers that
+only care about hard blocks.
+
+- Event Type: __`dev.agentevents.guardrail.blocked.0.1.0-draft`__
+- Predicate: blocked
+- Subject: [`guardrail`](#guardrail)
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| id | `String` | See [id](spec.md#id-subject) | ✅ |
+| source | `URI-Reference` | See [source](spec.md#source-subject) | |
+| guardrailName | `String` | The name of the guardrail/policy check | ✅ |
+| agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | ✅ |
+| severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, `critical` |
+| reason | `String` | human-readable explanation of the check's decision | |
+| url | `URI` | url to the `guardrail` evaluation | |

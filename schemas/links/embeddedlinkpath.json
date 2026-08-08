@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentevents.dev/0.1.0-draft/schema/links/embeddedlinkpath",
+  "properties": {
+    "linkType": {
+      "type": "string",
+      "enum": [
+        "PATH"
+      ]
+    },
+    "from": {
+      "description": "The event that precedes this one on the path.",
+      "type": "object",
+      "properties": {
+        "contextId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contextId"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "linkType",
+    "from"
+  ]
+}

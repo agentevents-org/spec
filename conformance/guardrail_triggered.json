@@ -1,0 +1,23 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "g890-7890-7890",
+    "source": "/staging/my-agent-runtime",
+    "type": "dev.agentevents.guardrail.triggered.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:22Z"
+  },
+  "subject": {
+    "id": "guardrail-654",
+    "content": {
+      "guardrailName": "pii-filter",
+      "agentRun": {
+        "id": "run-1234",
+        "source": "/staging/my-agent-runtime"
+      },
+      "action": "flag",
+      "severity": "medium",
+      "reason": "Detected email address in output",
+      "url": "https://dashboard.example.com/runs/run-1234/guardrails/guardrail-654"
+    }
+  }
+}
