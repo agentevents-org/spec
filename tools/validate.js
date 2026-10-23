@@ -15,17 +15,20 @@
 // Validate schemas, positive/negative fixtures, envelopes and closed scenarios.
 import { basename, join, relative } from "node:path";
 import { globSync } from "glob";
-import { ROOT, loadJSON, schemaCount, validateEvent, validateEnvelope, validateScenario } from "./lib/validation.js";
+import { ROOT, loadJSON, schemaCount, validateEvent, validateSchema, validateEnvelope, validateScenario } from "./lib/validation.js";
 
 let failed = 0;
 let checked = 0;
 console.log(`${schemaCount} schemas compiled locally`);
-for (const [pattern, validate, invalid] of [
+// The optional fourth entry must pass first: semantic fixtures are
+// schema-valid but violate a rule enforced in code.
+for (const [pattern, validate, invalid, precondition] of [
   ["conformance/*.json", validateEvent, false],
   ["custom/conformance.json", validateEvent, false],
   ["conformance/scenarios/*.json", validateScenario, false],
   ["conformance/envelopes/*.json", validateEnvelope, false],
-  ["conformance/invalid/*.json", validateEvent, true],
+  ["conformance/invalid/*.json", validateSchema, true],
+  ["conformance/semantic/*.json", validateEvent, true, validateSchema],
 ]) {
   for (const file of globSync(join(ROOT, pattern)).sort()) {
     checked++;
@@ -37,6 +40,7 @@ for (const [pattern, validate, invalid] of [
           throw new Error("Fixture filename does not match its event type");
         }
       }
+      if (precondition) precondition(fixture);
       let error;
       try { validate(fixture); } catch (e) { error = e; }
       if (invalid ? !error : error) throw error ?? new Error("Invalid fixture unexpectedly accepted");

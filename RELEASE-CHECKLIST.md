@@ -9,10 +9,14 @@ recorded here; permissions and service configuration need separate verification.
 - [x] Record the project domain confirmed by the maintainer: `agent-events.dev`.
       Schema identifiers use this domain; event-type namespaces retain
       `dev.agentevents` and `dev.agenteventsx` as vocabulary identifiers.
+- [ ] Decide whether to keep the `dev.agentevents` prefixes. `agentevents.dev`
+      is held by a third party, so the prefix reads as their domain by
+      reverse-DNS convention; [spec.md](spec.md#type-context) disclaims this.
+      Renaming is cheapest before the first release.
 - [ ] Decide where versioned schemas will be served. Repository schemas
       already support local/offline distribution.
 - [x] Publish the maintainer-provided private security contact:
       `cameron@agent-events.dev` in [SECURITY.md](SECURITY.md).
 - [x] Publish the private conduct-reporting contact:
       `cameron@agent-events.dev` in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-- [ ] Check remote CI passes after the draft changes are pushed.
+- [x] Check remote CI passes after the draft changes are pushed.

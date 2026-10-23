@@ -201,6 +201,11 @@ events defined in the [vocabulary](#vocabulary):
   AgentEvents. Events that use these event types are known as
   ["custom events"](custom/README.md).
 
+  The `dev.agentevents` and `dev.agenteventsx` prefixes are fixed vocabulary
+  identifiers reserved by this specification. They are not derived from a
+  domain name by reverse-DNS convention; the project domain is
+  `agent-events.dev`.
+
 - Constraints:
   - REQUIRED
   - `dev.agentevents.` types MUST be defined in the [vocabulary](#vocabulary)

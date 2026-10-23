@@ -29,12 +29,20 @@ for (const schema of schemas) {
 export const eventKey = (context) => JSON.stringify([context.source, context.id]);
 const subjectKey = (subject, source) => JSON.stringify([subject.source ?? source, subject.id]);
 
-export function validateEvent(event) {
+// JSON Schema only: what any conforming 2020-12 validator can check.
+export function validateSchema(event) {
   const type = event?.context?.type;
   const validate = typeof type === "string" && type.startsWith("dev.agenteventsx.")
     ? custom : eventValidators.get(type);
   if (!validate) throw new Error(`Unsupported event type/version: ${type}`);
   if (!validate(event)) throw new Error(ajv.errorsText(validate.errors, { separator: "\n" }));
+  return event;
+}
+
+// Schema plus rules JSON Schema cannot express; SDKs must implement these in code.
+export function validateEvent(event) {
+  validateSchema(event);
+  const type = event.context.type;
   const c = event.subject.content;
   if (type.startsWith("dev.agentevents.modelinvocation.finished.") &&
       [c.promptTokens, c.completionTokens, c.totalTokens].every((n) => n !== undefined) &&
