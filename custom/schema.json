@@ -1,95 +1,27 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentevents.dev/0.1.0-draft/schema/custom",
+  "$id": "https://agent-events.dev/0.1.0-draft/schema/custom",
+  "allOf": [
+    {
+      "$ref": "common/definitions#/$defs/event"
+    }
+  ],
   "properties": {
     "context": {
       "properties": {
-        "specversion": {
-          "type": "string",
-          "minLength": 1
-        },
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri-reference"
-        },
         "type": {
           "type": "string",
-          "pattern": "^dev\\.agenteventsx\\.[a-zA-Z0-9]+-[a-zA-Z]+\\.[a-zA-Z]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "schemaUri": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri"
-        },
-        "chainId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "links": {
-          "$ref": "links/embeddedlinksarray"
+          "pattern": "^dev\\.agenteventsx\\.[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*-[a-zA-Z][a-zA-Z0-9_]*\\.[a-zA-Z][a-zA-Z0-9_]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
         }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "specversion",
-        "id",
-        "source",
-        "type",
-        "timestamp"
-      ]
+      }
     },
     "subject": {
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri-reference"
-        },
         "content": {
           "type": "object",
           "additionalProperties": true
         }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "id",
-        "content"
-      ]
-    },
-    "customData": {
-      "oneOf": [
-        {
-          "type": "object"
-        },
-        {
-          "type": "string",
-          "contentEncoding": "base64"
-        }
-      ]
-    },
-    "customDataContentType": {
-      "type": "string"
+      }
     }
-  },
-  "additionalProperties": false,
-  "type": "object",
-  "required": [
-    "context",
-    "subject"
-  ]
+  }
 }

@@ -1,67 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentevents.dev/0.1.0-draft/schema/agentrun-finished-event",
+  "$id": "https://agent-events.dev/0.1.0-draft/schema/agentrun-finished-event",
+  "allOf": [
+    {
+      "$ref": "common/definitions#/$defs/event"
+    }
+  ],
   "properties": {
     "context": {
       "properties": {
-        "specversion": {
-          "type": "string",
-          "minLength": 1
-        },
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri-reference"
-        },
         "type": {
           "type": "string",
           "enum": [
             "dev.agentevents.agentrun.finished.0.1.0-draft"
           ],
           "default": "dev.agentevents.agentrun.finished.0.1.0-draft"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "schemaUri": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri"
-        },
-        "chainId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "links": {
-          "$ref": "links/embeddedlinksarray"
         }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "specversion",
-        "id",
-        "source",
-        "type",
-        "timestamp"
-      ]
+      }
     },
     "subject": {
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1,
-          "format": "uri-reference"
-        },
         "content": {
           "properties": {
             "agentName": {
@@ -75,48 +33,22 @@
               "format": "uri"
             },
             "outcome": {
-              "type": "string",
-              "enum": [
-                "success",
-                "failure",
-                "cancel",
-                "error"
-              ]
+              "$ref": "common/definitions#/$defs/outcome"
             },
             "errors": {
               "type": "string"
+            },
+            "parentAgentRun": {
+              "$ref": "common/definitions#/$defs/subjectReference"
             }
           },
           "additionalProperties": false,
-          "type": "object"
+          "type": "object",
+          "required": [
+            "outcome"
+          ]
         }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "id",
-        "content"
-      ]
-    },
-    "customData": {
-      "oneOf": [
-        {
-          "type": "object"
-        },
-        {
-          "type": "string",
-          "contentEncoding": "base64"
-        }
-      ]
-    },
-    "customDataContentType": {
-      "type": "string"
+      }
     }
-  },
-  "additionalProperties": false,
-  "type": "object",
-  "required": [
-    "context",
-    "subject"
-  ]
+  }
 }

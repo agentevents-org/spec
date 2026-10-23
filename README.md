@@ -9,10 +9,12 @@ agents — agent runs, tool calls, and model invocations — as
 AI agent frameworks (LangChain, CrewAI, AutoGen, the OpenAI Agents SDK, the
 Claude Agent SDK, and many in-house systems) each emit their own shape of
 telemetry for what an agent did: which tools it called, which model it
-invoked, whether a run succeeded. There is no common way to describe this
-activity, which means every consumer — observability platforms, evaluation
-tooling, cost dashboards, audit systems — has to write a bespoke integration
-per framework.
+invoked, whether a run succeeded. OpenTelemetry already defines GenAI
+conventions for observing much of this activity. AgentEvents complements
+those conventions with a CloudEvents vocabulary that applications can
+subscribe to and process independently: for example, a live run interface
+consuming lifecycle updates, or a policy/evaluation pipeline consuming
+activity from several runtimes. See [OpenTelemetry interoperability](otel.md).
 
 [CloudEvents](https://github.com/cloudevents/spec) already solves the generic
 envelope problem (how to identify, route and transport an event) but
@@ -39,7 +41,10 @@ The specification is a work in progress. Key documents:
 - [`schemas/`](schemas) — JSON Schema for every event type.
 - [`conformance/`](conformance) — example event payloads, one per event type,
   used to validate the schemas and as SDK test fixtures.
+- [`otel.md`](otel.md) — OpenTelemetry mappings and trace correlation.
+- [`conformance/scenarios/`](conformance/scenarios/) — a checked integration scenario.
 - [`governance.md`](governance.md) — how decisions get made.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — local validation and contribution process.
 
 ## Status
 

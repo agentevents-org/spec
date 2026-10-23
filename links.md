@@ -46,15 +46,22 @@ links-service use case emerges.
 
 Every link object refers to another AgentEvent by its
 [`context.id`](spec.md#id-context), called a `contextId` in link objects.
-Because `source` + `id` is what makes an AgentEvent globally unique (see
-[`spec.md`](spec.md#id-context)), a `contextId` alone is only unambiguous
-within a single `source`; producers linking across sources are expected to
-use a shared `chainId` (see below) to scope the reference.
+Each `from` or `target` endpoint MAY also contain `source` (a non-empty
+URI-reference). When omitted, it defaults to the containing event's
+`context.source`. Producers MUST include it when linking to a different
+source. A shared `chainId` groups events but never makes bare IDs globally
+unique. Link endpoints identify events by `(source, contextId)`; embedded
+subject references identify subjects by `(source, id)`.
+
+For example, `/runtime/a` and `/runtime/b` can both emit event `"1"` in one
+chain. A link in `/runtime/b` to the first source MUST use
+`{"contextId": "1", "source": "/runtime/a"}`. See the
+[checked scenario](conformance/scenarios/handoff.json).
 
 There is no separate `START` link type: since every AgentEvent already
-carries its own `context.id`, a chain's start is simply the first event
-sharing a given `chainId` — no explicit marker is needed. An explicit `END`
-link type does exist, because inferring the end of a chain is not generally
+carries its own `context.id`, the earliest observed event
+is only a partial view of the chain and MUST NOT be assumed to be its start.
+An explicit `END` link type does exist, because inferring the end of a chain is not generally
 possible (a chain may have gaps, branches, or simply stop being observed).
 
 ## chainId
@@ -72,7 +79,8 @@ other event by chain; `links` (below) may still connect it explicitly.
 
 ## Link Types
 
-All link objects share two fields:
+Endpoints in the tables below MAY also include `source`, with the default
+defined in [Overview](#overview). All link objects share two fields:
 
 | Name | Description |
 |------|-------------|
@@ -97,6 +105,9 @@ via a free-form `linkKind` — for example `TRIGGER` to say "this event was
 caused by that one". AgentEvents does not close the set of valid
 `linkKind` values; producers are encouraged to reuse existing ones where
 applicable (`TRIGGER` is the one used throughout this spec's own examples).
+`RETRY` points from an event of a new execution attempt to an event of the
+attempt it replaces (see
+[delivery and execution identity](spec.md#delivery-and-execution-identity)).
 
 | Name | Description |
 |------|-------------|
@@ -105,9 +116,20 @@ applicable (`TRIGGER` is the one used throughout this spec's own examples).
 
 ### End Link
 
-An `END` link marks this event as the end of its chain. Since chains cannot
-generally be assumed to be "done" just because events stop arriving, an
-explicit `END` link is the only reliable signal that a chain is complete.
+An `END` link declares that the producer responsible for the chain considers
+its execution complete. An event containing `END` MUST have `chainId`.
+The responsible producer MUST account for joined child work before declaring
+completion. Detached work that can outlive the chain MUST use a separate
+chain (and MAY link back to the originating event).
+
+An `END` can arrive before earlier events or while events are missing. It
+MUST NOT be interpreted as proof of delivery, complete history or retention.
+`from`, when present, points to the last event of joined work whose
+completion led the producer to declare the chain complete (for example, the
+final child run's `finished`). It may differ from this event's own `PATH`
+predecessor, and it is not a reference to all branches or the chain's start.
+A consumer needing complete history requires an application-level delivery
+or reconciliation protocol.
 
 | Name | Description |
 |------|-------------|
@@ -147,7 +169,8 @@ A `toolCall.started` event that was triggered by a specific
 }
 ```
 
-The `agentRun.finished` event that ends the same chain:
+The `agentRun.finished` event declaring completion of the same chain, after
+the handoff-finished fixture (`f789-6789-6789`):
 
 ```json
 {
@@ -162,7 +185,7 @@ The `agentRun.finished` event that ends the same chain:
       {
         "linkType": "END",
         "from": {
-          "contextId": "a234-1234-1234"
+          "contextId": "f789-6789-6789"
         }
       }
     ]

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentevents.dev/0.1.0-draft/schema/links/embeddedlinkpath",
+  "$id": "https://agent-events.dev/0.1.0-draft/schema/links/embeddedlinkpath",
   "properties": {
     "linkType": {
       "type": "string",
@@ -9,22 +9,11 @@
       ]
     },
     "from": {
-      "description": "The event that precedes this one on the path.",
-      "type": "object",
-      "properties": {
-        "contextId": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "contextId"
-      ]
+      "$ref": "../common/definitions#/$defs/eventReference",
+      "description": "The event that precedes this one on the path."
     },
     "tags": {
-      "type": "object",
-      "additionalProperties": true
+      "$ref": "../common/definitions#/$defs/linkTags"
     }
   },
   "additionalProperties": false,

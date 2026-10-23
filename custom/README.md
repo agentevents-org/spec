@@ -48,6 +48,21 @@ The following features of the specification are related to custom events:
   specifications are encouraged to add their specification to the shared
   [registry](registry.md).
 
+### Naming grammar
+
+The type format is
+`dev.agenteventsx.<framework>-<subject>.<predicate>.<version>`.
+Framework names contain one or more ASCII alphanumeric segments separated
+by hyphens. The final hyphen separates the framework from the subject;
+subject and predicate names start with an ASCII letter and continue with
+ASCII letters, digits or underscores. They do not contain hyphens or dots.
+Names are case-sensitive. Thus `openai-agents-handoff` identifies framework
+`openai-agents` and subject `handoff`, while `crewai-task_step` identifies
+framework `crewai` and subject `task_step`. Namespace owners MUST coordinate
+framework names to avoid collisions. The version is full SemVer 2.0.0,
+including optional prerelease and build identifiers; leading zeroes in
+numeric version or prerelease identifiers are invalid.
+
 ### Versioning
 
 Similar to regular AgentEvents, custom AgentEvents include two versions:
@@ -60,10 +75,11 @@ Similar to regular AgentEvents, custom AgentEvents include two versions:
 
 ### SDKs
 
-When consuming (parsing) an event with `context.schemaUri`, SDKs SHOULD
-fetch the schema defined in `context.schemaUri` and **additionally**
-validate the event against that schema, unless security concerns dictate
-otherwise.
+SDKs MUST follow the [schema resolution policy](../spec.md#schemauri):
+validate the base schema locally, prefer registered or cached refinements,
+and enable bounded remote resolution only by explicit operator configuration.
+SDKs MUST expose refinement status separately from base-schema validity;
+an unavailable schema is unresolved, not successfully validated.
 
 When consuming (parsing) an event with a `dev.agenteventsx` type, SDKs will
 return an object that is identical in structure for all events, and which

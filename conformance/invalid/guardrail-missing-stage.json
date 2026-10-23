@@ -1,0 +1,36 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "2",
+    "source": "/runtime/c",
+    "type": "dev.agentevents.guardrail.triggered.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:16Z",
+    "chainId": "example-chain",
+    "links": [
+      {
+        "linkType": "RELATION",
+        "target": {
+          "contextId": "1",
+          "source": "/runtime/c"
+        },
+        "linkKind": "TRIGGER"
+      }
+    ]
+  },
+  "subject": {
+    "id": "evaluation-1",
+    "content": {
+      "guardrailName": "destructive-action-policy",
+      "agentRun": {
+        "id": "specialist"
+      },
+      "evaluatedSubject": {
+        "id": "proposed-delete",
+        "type": "toolCall"
+      },
+      "severity": "high",
+      "reason": "Action requires approval",
+      "action": "block"
+    }
+  }
+}

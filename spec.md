@@ -44,6 +44,7 @@ AI agents as [CloudEvents][cloudevents-spec].
     - [content](#content)
   - [OPTIONAL Subject Attributes](#optional-subject-attributes)
     - [source (subject)](#source-subject)
+  - [Embedded subject references](#embedded-subject-references)
   - [Subject example](#subject-example)
 - [AgentEvents custom data](#agentevents-custom-data)
   - [OPTIONAL Custom Data attributes](#optional-custom-data-attributes)
@@ -52,6 +53,8 @@ AI agents as [CloudEvents][cloudevents-spec].
   - [Examples](#examples)
     - [JSON Data](#json-data)
     - [Generic Data](#generic-data)
+- [Delivery and execution identity](#delivery-and-execution-identity)
+- [Sensitive content](#sensitive-content)
 - [Vocabulary](#vocabulary)
 <!-- /toc -->
 
@@ -90,15 +93,19 @@ For the mapping of AgentEvents onto CloudEvents, see the
 ### Notational Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
-interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this specification are to be
+interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119)
+and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when,
+they appear in all capitals.
 
 For clarity, when a feature is marked as "OPTIONAL" this means that it is
 OPTIONAL for both the [Producer][producer] and [Consumer][consumer] of a
 message to support that feature. In other words, a producer can choose to
 include that feature in a message if it wants, and a consumer can choose to
-support that feature if it wants. A consumer that does not support that
-feature will then silently ignore that part of the message. The producer
+support that feature if it wants. Within an explicitly supported version,
+a consumer that does not implement that feature ignores its semantics after
+validation. Unknown versions follow the
+[consumer compatibility policy](governance.md#consumer-compatibility). The producer
 needs to be prepared for the situation where a consumer ignores that feature.
 An [Intermediary][intermediary] SHOULD forward OPTIONAL attributes.
 
@@ -128,16 +135,9 @@ the event, but an event will not identify a specific routing destination.
 The "subject" is the entity with which the occurrence in an AI agent system
 is concerned. For instance when an agent starts executing, the agent run is
 the subject of the occurrence, or when a tool is invoked, the tool call is
-the subject. Subjects have a list of *attributes* associated, defined in the
-[vocabulary](#vocabulary). Subjects belong to two main categories:
-
-- long running, which stay in a running state until they're purposely
-  stopped or encounter a failure or a condition that prevents them from
-  running
-- run to completion, which independently stop after they accomplished (or
-  failed to) a specific task, or encounter a failure or a condition that
-  prevents them from continuing — for example an agent run, a tool call, or
-  a model invocation
+the subject. Subjects have *attributes* defined in the [vocabulary](#vocabulary).
+The current lifecycle subjects run to completion: they stop after completing
+or failing their task, cancellation, or a runtime error.
 
 #### Predicate
 
@@ -174,7 +174,7 @@ events defined in the [vocabulary](#vocabulary):
 
 - Type: [`String`][typesystem]
 - Description: Identifier for an event. Subsequent delivery attempts of the
-  same event MAY share the same [`id`](#id-context). This attribute matches
+  same event MUST retain the same [`id`](#id-context) and payload. This attribute matches
   the syntax and semantics of the [`id`][ce-id] attribute of CloudEvents.
 
 - Constraints:
@@ -192,7 +192,7 @@ events defined in the [vocabulary](#vocabulary):
   *predicate* and *version*. Valid event types are defined in the
   [vocabulary](#vocabulary).
 
-  All event types should be prefixed with `dev.agentevents.`. One occurrence
+  Core event types MUST be prefixed with `dev.agentevents.`. One occurrence
   may have multiple events associated, as long as they have different event
   types. *Versions* are semantic in the *major.minor.patch* format (`M.m.p`).
 
@@ -279,10 +279,19 @@ events defined in the [vocabulary](#vocabulary):
   AgentEvents schema. For example, the schema at `schemaUri` could restrict
   a `string` field to a specific `Enum`.
 
-  Consumers of events that specify a `schemaUri` SHOULD validate the event
-  against the AgentEvents schema as well as the additional schema provided.
-  If the consumer does not have access to the URI specified, it SHOULD fail
-  to validate the event.
+  Consumers MUST validate against the matching AgentEvents base schema.
+  Consumers SHOULD additionally validate against a registered or cached
+  refinement schema when available. Remote resolution MUST be explicitly
+  enabled by the operator; the presence of a URI alone MUST NOT cause a
+  network request. Operators MUST bound permitted schemes/hosts, redirects,
+  response size, resolution depth and time, including resolution of `$ref`s.
+
+  Consumers MUST distinguish base-schema validity from refinement status:
+  `valid`, `invalid`, or `unresolved`. An unresolved refinement MUST NOT be
+  reported as fully validated. Applications requiring refinement validation
+  MUST reject or quarantine unresolved events; others MAY process base-valid
+  events while exposing the unresolved status. No remote fetching is needed
+  for the repository's conformance checks.
 
 - Constraints:
   - OPTIONAL
@@ -401,7 +410,8 @@ events defined in the [vocabulary](#vocabulary):
   the event [`type`](#type-context). All attributes in the subject
   [`content`](#content), REQUIRED and OPTIONAL ones, MUST comply with the
   specification from the [vocabulary](#vocabulary). The
-  [`content`](#content) may be empty.
+  [`content`](#content) MAY be empty only when the event vocabulary has no
+  REQUIRED content fields.
 
 - Constraints:
   - REQUIRED
@@ -431,6 +441,16 @@ events defined in the [vocabulary](#vocabulary):
 
   The format and semantics of the *subject* [`source`](#source-subject) are
   the same as those of the *context* [`source`](#source-context).
+
+### Embedded subject references
+
+A subject's effective source is its `subject.source`, or `context.source`
+when omitted. Embedded references (`agentRun`, `sourceAgentRun`,
+`targetAgentRun`, `parentAgentRun`, and `evaluatedSubject`) identify subjects,
+not events. Their `source` defaults to the containing event's `context.source`,
+even when its `subject.source` differs. Producers MUST supply `source` when
+the referenced subject has a different effective source. Identity is the pair
+of effective source and subject `id`; `chainId` never disambiguates IDs.
 
 ### Subject example
 
@@ -465,8 +485,8 @@ additional data in AgentEvents.
 
 #### customData
 
-- Type: This specification does not place any restriction on the type of
-  this information.
+- Type: Any JSON value when the content type is `application/json` (the
+  default); a base64 string for every other content type.
 - Description: custom data. The content of the `customData` field is not
   specified by AgentEvents and typically requires producer-specific
   knowledge to be parsed.
@@ -514,7 +534,12 @@ directly in the `customData` field, as in the following example:
 
 #### Generic Data
 
-Generic (non-JSON) data must be base64 encoded:
+Generic (non-JSON) data MUST be encoded as canonical RFC 4648 base64, with
+padding and without whitespace. `application/json` is matched case-insensitively
+and MAY have media-type parameters. Media-type syntax still follows RFC 2046;
+consumers MUST check that syntax separately from JSON Schema validation.
+Other types, including `application/*+json`,
+use base64 under this binding:
 
 ```json
 {
@@ -524,6 +549,40 @@ Generic (non-JSON) data must be base64 encoded:
   "customDataContentType": "application/xml"
 }
 ```
+
+## Delivery and execution identity
+
+AgentEvents defines payload semantics, not transport delivery guarantees.
+Consumers MUST tolerate duplicate and out-of-order delivery and MUST NOT
+infer success from a missing `finished` event. They MAY observe a finish
+without its start. Deduplicate events using `(context.source, context.id)`;
+conflicting payloads for that identity are invalid and MUST be rejected or
+quarantined. A retransmission retains its identity, timestamp and payload.
+
+A new execution attempt (including a tool/model retry) MUST have a new subject
+ID and new event IDs. Its lifecycle predicates share that attempt's subject
+identity. Producers MAY relate attempts using a `RELATION` with
+`linkKind: "RETRY"`, pointing from the new attempt's event to an event in the
+previous attempt. This includes `agentRun` retries: consumers that need a
+stable logical run across attempts follow `RETRY` links, because subject IDs
+differ per attempt. Retrying delivery does not create a new execution attempt.
+Cancellation before execution MAY emit `finished` with `outcome: "cancel"`
+without `started`. An `END` declares producer completion, not complete receipt;
+see [END semantics](links.md#end-link).
+
+## Sensitive content
+
+The core vocabulary is metadata-only by default. Prompts, arguments and
+results are not REQUIRED. Content capture MUST be controlled by the emitting
+application and disabled unless explicitly enabled. Producers SHOULD redact
+sensitive content or use references to separately access-controlled artifacts.
+For example, a metadata-only tool event can name `search_web` and its run
+without carrying the search query; an opted-in deployment can add
+`customData: {"artifactId": "redacted-result-123"}` for an authorized artifact
+service to resolve. `errors`, `reason`, `url`, custom subject content and
+`customData` require the same care. Producers MUST NOT embed credentials in
+URLs. Hashes alone do not guarantee privacy. Audit completeness depends on
+emission, transport, retention and access policies beyond this format.
 
 ## Vocabulary
 

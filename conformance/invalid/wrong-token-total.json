@@ -1,0 +1,34 @@
+{
+  "context": {
+    "specversion": "0.1.0-draft",
+    "id": "3",
+    "source": "/runtime/a",
+    "type": "dev.agentevents.modelinvocation.finished.0.1.0-draft",
+    "timestamp": "2026-08-05T17:31:05Z",
+    "chainId": "example-chain",
+    "links": [
+      {
+        "linkType": "PATH",
+        "from": {
+          "contextId": "2",
+          "source": "/runtime/a"
+        }
+      }
+    ]
+  },
+  "subject": {
+    "id": "model-1",
+    "content": {
+      "modelName": "example-model",
+      "modelProvider": "example",
+      "agentRun": {
+        "id": "root"
+      },
+      "outcome": "success",
+      "responseModelName": "example-model-r1",
+      "promptTokens": 100,
+      "completionTokens": 20,
+      "totalTokens": 999
+    }
+  }
+}

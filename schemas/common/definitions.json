@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-events.dev/0.1.0-draft/schema/common/definitions",
+  "$comment": "Structural schemas shared by core/custom events and links. _defs contains separate glossary records.",
+  "$defs": {
+    "event": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "customData": {},
+        "customDataContentType": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "context",
+        "subject"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "customDataContentType": {
+                "not": {
+                  "pattern": "^[aA][pP][pP][lL][iI][cC][aA][tT][iI][oO][nN]/[jJ][sS][oO][nN](?:[ \\t]*;.*)?$"
+                }
+              }
+            },
+            "required": [
+              "customDataContentType"
+            ]
+          },
+          "then": {
+            "properties": {
+              "customData": {
+                "type": "string",
+                "contentEncoding": "base64",
+                "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/][AQgw]==|[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=)?$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "context": {
+      "properties": {
+        "specversion": {
+          "type": "string",
+          "const": "0.1.0-draft"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri-reference"
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaUri": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri"
+        },
+        "chainId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "links": {
+          "$ref": "../links/embeddedlinksarray"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "specversion",
+        "id",
+        "source",
+        "type",
+        "timestamp"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "links": {
+                "contains": {
+                  "properties": {
+                    "linkType": {
+                      "const": "END"
+                    }
+                  },
+                  "required": [
+                    "linkType"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "links"
+            ]
+          },
+          "then": {
+            "required": [
+              "chainId"
+            ]
+          }
+        }
+      ]
+    },
+    "subject": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri-reference"
+        },
+        "content": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "content"
+      ]
+    },
+    "subjectReference": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri-reference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failure",
+        "cancel",
+        "error"
+      ]
+    },
+    "evaluatedSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri-reference"
+        },
+        "type": {
+          "enum": [
+            "agentRun",
+            "toolCall",
+            "modelInvocation"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "guardrailStage": {
+      "enum": [
+        "input",
+        "output",
+        "tool"
+      ]
+    },
+    "eventReference": {
+      "type": "object",
+      "properties": {
+        "contextId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri-reference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contextId"
+      ]
+    },
+    "linkTags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

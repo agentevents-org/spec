@@ -27,6 +27,7 @@ to [CloudEvents][ce-spec] headers and body.
   - [time](#time)
   - [datacontenttype](#datacontenttype)
   - [dataschema](#dataschema)
+- [Consumer validation](#consumer-validation)
 - [CloudEvents Data](#cloudevents-data)
   - [Examples](#examples)
 <!-- /toc -->
@@ -85,6 +86,22 @@ The [CloudEvents `dataschema`][ce-dataschema] MAY be set to a URL that
 points to the event data [schema](schemas/) included in this specification
 for the given event type.
 
+## Consumer validation
+
+Consumers MUST validate the CloudEvents envelope and the AgentEvents payload
+before acting on the event. The outer `id`, `source`, `type`, `subject` and
+`time` MUST equal their mapped inner values. A mismatch MUST be rejected or
+quarantined as an invalid event; consumers MUST NOT choose one copy and
+continue processing. This draft compares serialized timestamp values exactly.
+The outer `specversion: "1.0"` and inner `specversion: "0.1.0-draft"`
+identify different specifications and MUST NOT be compared for equality.
+
+Trace correlation MAY use the [OTel profile](otel.md#optional-trace-correlation-profile).
+If an application needs broker filtering by chain, it MAY copy `context.chainId`
+to an outer `chainid` extension. When present, `chainid` MUST equal the inner
+value; a missing or different inner value is a mismatch under the same policy.
+Extension names are lowercase alphanumeric, as required by CloudEvents.
+
 ## CloudEvents Data
 
 The content and format of the event data depends on the specific
@@ -99,15 +116,22 @@ AgentEvent, i.e. [`context`](spec.md#agentevent-context),
 format specified by the [schema](schemas/) for the event type.
 
 [Custom data](spec.md#agentevents-custom-data) of type `application/json`
+(case-insensitive, with optional media-type parameters)
 MUST be embedded as-is in the [`customData`](spec.md#customdata) field.
-Data with any other content type MUST be base64 encoded and set as the
-value of the [`customData`](spec.md#customdata) field.
+Data with any other content type MUST use canonical padded RFC 4648 base64
+without whitespace, set as the value of the [`customData`](spec.md#customdata) field.
 
 In CloudEvents HTTP binary mode, the `Content-Type` HTTP header MUST be set
 to `application/json`. In CloudEvents HTTP structured mode, the same
 information is carried in the CloudEvents context field `datacontenttype`.
 
 ### Examples
+
+A complete JSON structured-mode envelope is checked by the validator in
+[conformance/envelopes/toolcall.json](conformance/envelopes/toolcall.json).
+Send it with HTTP `Content-Type: application/cloudevents+json`; the outer
+`datacontenttype: "application/json"` describes its `data` payload. The two
+`specversion` fields intentionally differ.
 
 Full example of an AgentEvent transported through a CloudEvent in HTTP
 *binary* mode:

@@ -4,7 +4,8 @@
     "id": "e678-5678-5678",
     "source": "/staging/my-agent-runtime",
     "type": "dev.agentevents.agenthandoff.started.0.1.0-draft",
-    "timestamp": "2026-08-05T17:31:30Z"
+    "timestamp": "2026-08-05T17:31:30Z",
+    "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359"
   },
   "subject": {
     "id": "handoff-321",

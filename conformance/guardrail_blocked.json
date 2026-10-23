@@ -4,7 +4,8 @@
     "id": "h901-8901-8901",
     "source": "/staging/my-agent-runtime",
     "type": "dev.agentevents.guardrail.blocked.0.1.0-draft",
-    "timestamp": "2026-08-05T17:31:22Z"
+    "timestamp": "2026-08-05T17:31:22Z",
+    "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359"
   },
   "subject": {
     "id": "guardrail-655",
@@ -15,8 +16,13 @@
         "source": "/staging/my-agent-runtime"
       },
       "severity": "high",
-      "reason": "Prompt injection pattern matched",
-      "url": "https://dashboard.example.com/runs/run-1234/guardrails/guardrail-655"
+      "reason": "Output violates policy",
+      "url": "https://dashboard.example.com/runs/run-1234/guardrails/guardrail-655",
+      "evaluatedSubject": {
+        "id": "run-1234",
+        "type": "agentRun"
+      },
+      "stage": "output"
     }
   }
 }

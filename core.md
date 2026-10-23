@@ -52,6 +52,7 @@ invocation.
 | id | `String` | See [id](spec.md#id-subject) | `run-1234`, `tenant1/run-abcde` |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | agentName | `String` | The name of the agent | `research-assistant`, `customer-support-bot` |
+| parentAgentRun | `Object` | OPTIONAL containing run, with `id` and optional `source` | `{"id": "run-parent"}` |
 | agentVersion | `String` | The version of the agent definition (prompt, graph, or code revision) | `1.4.2`, `git:a1b2c3d` |
 | url | `URI` | url to view the `agentRun`, e.g. a trace or dashboard link | `https://dashboard.example.com/runs/run-1234` |
 | outcome | `String (enum)` | outcome of a finished `agentRun` | `success`, `failure`, `cancel`, or `error` |
@@ -83,7 +84,8 @@ response). A `modelInvocation` is a single instance of such a call.
 |-------|------|-------------|----------|
 | id | `String` | See [id](spec.md#id-subject) | `inv-789`, `run-1234/inv-1` |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
-| modelName | `String` | The name of the model invoked | `claude-sonnet-5`, `gpt-4o` |
+| modelName | `String` | The requested model name (not the returned model) | `claude-sonnet-5`, `gpt-4o` |
+| responseModelName | `String` | OPTIONAL returned model identity, only on `finished` | `provider-model-revision` |
 | modelProvider | `String` | The provider of the model | `anthropic`, `openai`, `azure-openai` |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this `modelInvocation` belongs to | `{"id": "run-1234"}` |
 | url | `URI` | url to view the `modelInvocation` | `https://dashboard.example.com/runs/run-1234/invocations/inv-789` |
@@ -127,10 +129,83 @@ instance of such a check being evaluated within an `agentRun`.
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | guardrailName | `String` | The name of the guardrail/policy check | `pii-filter`, `content-moderation`, `jailbreak-detector` |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | `{"id": "run-1234"}` |
+| evaluatedSubject | `Object` | REQUIRED evaluated subject: `id`, `type` (`agentRun`, `toolCall`, `modelInvocation`), optional `source` | `{"id": "call-456", "type": "toolCall"}` |
+| stage | `String (enum)` | REQUIRED evaluation phase | `input`, `output`, `tool` |
 | action | `String (enum)` | what the guardrail decided to do; REQUIRED on `triggered`, absent on `blocked` (implied `block`) | `allow`, `flag`, or `block` |
 | severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, or `critical` |
 | reason | `String` | human-readable explanation of the check's decision | `Detected email address in output`, `Prompt injection pattern matched` |
 | url | `URI` | url to view the `guardrail` evaluation | `https://dashboard.example.com/runs/run-1234/guardrails/guardrail-654` |
+
+## Shared lifecycle semantics
+
+### Completion outcomes
+
+Every `finished` event MUST include `outcome`:
+
+| Value | Meaning |
+| --- | --- |
+| `success` | This subject completed its intended operation. A handoff succeeded when the recipient accepted it, not when the recipient finished its task. |
+| `failure` | The operation ran but did not achieve its intended result, such as a negative tool/business result or an unmet task goal. |
+| `error` | A runtime, provider, protocol or infrastructure exception prevented normal completion. |
+| `cancel` | The operation was explicitly stopped or withdrawn, including cancellation before it started. |
+
+A policy block that prevents a task from succeeding is `failure` unless the
+application explicitly cancels the attempt. `errors` is optional human-readable
+detail; consumers MUST classify completion using `outcome`, not parse that
+string. Parent and child outcomes are independent. See
+[delivery and execution identity](spec.md#delivery-and-execution-identity) for
+retries, missing starts and retransmissions.
+
+### Containment and handoffs
+
+`parentAgentRun` is an OPTIONAL subject reference on all run predicates. It
+identifies the containing run attempt; its direction is child to parent.
+Producers MUST keep it consistent across a run's lifecycle and MUST NOT
+create containment cycles. An agent invoked as a tool is a child run while
+the caller waits or continues. The child's tool/model events refer to the
+child run. Tool-to-child causality MAY additionally use a `TRIGGER` event link.
+
+A handoff transfers responsibility for work; its success means acceptance
+by the receiving run. It does not imply parentage or completion of either
+run. A nested child MUST carry `parentAgentRun`; a handoff recipient MAY be
+independent. References identify individual execution attempts, including
+when a parent or child is retried. See [reference source defaults](spec.md#embedded-subject-references).
+
+### Guardrail evaluation identity
+
+`evaluatedSubject` identifies the subject whose input, output or proposed
+action was checked. Its `type` is a subject kind, not an event type. `stage`
+is `input` (before consuming input), `output` (before releasing output), or
+`tool` (before executing a proposed tool action). A `tool`-stage evaluation
+MUST target a `toolCall`; `input` and `output` MAY target any subject kind.
+Proposed actions can have
+a subject identity before any `started` event; a blocked action MUST NOT be
+reported as started unless execution actually began.
+
+`triggered` denotes a completed evaluation even for `action: "allow"`.
+When the decision is `block`, producers MUST also emit `blocked`, retaining
+the same effective subject source, subject ID, target, stage and decision
+metadata. The two events have distinct context IDs. Consumers MUST count
+one evaluation by guardrail subject identity, not by counting both events.
+A re-evaluation uses a new subject ID. The existing predicate names are
+retained for this draft.
+
+### Model and usage semantics
+
+`modelName` is the requested model, including any alias used by the caller.
+`responseModelName` on `finished` is the returned model identity when the
+provider supplies it; consumers MUST NOT infer it from the requested name.
+
+Usage counters are non-negative integers for this invocation attempt only:
+`promptTokens` is total input tokens, including cached input;
+`completionTokens` is total output tokens, including reasoning tokens;
+`totalTokens` is their sum. When both component counts and the total are
+present, they MUST agree. Counts SHOULD come from provider-reported usage.
+If a provider cannot supply a count with these semantics, omit that count
+rather than report zero or add overlapping counters. Partial usage MAY be
+reported on unsuccessful attempts when known. Separate cache/reasoning
+breakdowns and monetary costs are deferred until consumer examples establish
+the needed accounting. See [OTel mappings](otel.md).
 
 ## Events
 
@@ -150,6 +225,7 @@ starts runs synchronously can choose to skip this event entirely.
 | id | `String` | See [id](spec.md#id-subject) | ✅ |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | agentName | `String` | The name of the agent | |
+| parentAgentRun | `Object` | Containing run reference | |
 | agentVersion | `String` | The version of the agent definition | |
 | url | `URI` | url to the `agentRun` | |
 
@@ -166,6 +242,7 @@ An `agentRun` has started and is running.
 | id | `String` | See [id](spec.md#id-subject) | ✅ |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | agentName | `String` | The name of the agent | |
+| parentAgentRun | `Object` | Containing run reference | |
 | agentVersion | `String` | The version of the agent definition | |
 | url | `URI` | url to the `agentRun` | |
 
@@ -182,9 +259,10 @@ An `agentRun` has finished, successfully or not.
 | id | `String` | See [id](spec.md#id-subject) | ✅ |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | agentName | `String` | The name of the agent | |
+| parentAgentRun | `Object` | Containing run reference | |
 | agentVersion | `String` | The version of the agent definition | |
 | url | `URI` | url to the `agentRun` | |
-| outcome | `String (enum)` | outcome of the `agentRun` | `success`, `failure`, `cancel`, `error` |
+| outcome | `String (enum)` | Completion outcome: `success`, `failure`, `cancel`, `error` | ✅ |
 | errors | `String` | details about the failure, when applicable | |
 
 ### [`toolCall started`](conformance/toolcall_started.json)
@@ -218,7 +296,7 @@ A `toolCall` has finished, successfully or not.
 | toolName | `String` | The name of the tool/function invoked | ✅ |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this `toolCall` belongs to | ✅ |
 | url | `URI` | url to the `toolCall` | |
-| outcome | `String (enum)` | outcome of the `toolCall` | `success`, `failure`, `cancel`, `error` |
+| outcome | `String (enum)` | Completion outcome: `success`, `failure`, `cancel`, `error` | ✅ |
 | errors | `String` | details about the failure, when applicable | |
 
 ### [`modelInvocation started`](conformance/modelinvocation_started.json)
@@ -233,7 +311,7 @@ A `modelInvocation` has started and is running.
 |-------|------|-------------|----------|
 | id | `String` | See [id](spec.md#id-subject) | ✅ |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
-| modelName | `String` | The name of the model invoked | ✅ |
+| modelName | `String` | The requested model name (not the returned model) | ✅ |
 | modelProvider | `String` | The provider of the model | |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this `modelInvocation` belongs to | ✅ |
 | url | `URI` | url to the `modelInvocation` | |
@@ -250,11 +328,12 @@ A `modelInvocation` has finished, successfully or not.
 |-------|------|-------------|----------|
 | id | `String` | See [id](spec.md#id-subject) | ✅ |
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
-| modelName | `String` | The name of the model invoked | ✅ |
+| modelName | `String` | The requested model name (not the returned model) | ✅ |
+| responseModelName | `String` | Returned model identity, when reported | |
 | modelProvider | `String` | The provider of the model | |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this `modelInvocation` belongs to | ✅ |
 | url | `URI` | url to the `modelInvocation` | |
-| outcome | `String (enum)` | outcome of the `modelInvocation` | `success`, `failure`, `cancel`, `error` |
+| outcome | `String (enum)` | Completion outcome: `success`, `failure`, `cancel`, `error` | ✅ |
 | errors | `String` | details about the failure, when applicable | |
 | promptTokens | `Integer` | number of tokens in the prompt | |
 | completionTokens | `Integer` | number of tokens generated | |
@@ -296,7 +375,7 @@ typically started its own `agentRun`) or the handoff failed.
 | targetAgentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` created for the target agent, when applicable | |
 | reason | `String` | Why the handoff happened | |
 | url | `URI` | url to the `agentHandoff` | |
-| outcome | `String (enum)` | outcome of the `agentHandoff` | `success`, `failure`, `cancel`, `error` |
+| outcome | `String (enum)` | Completion outcome: `success`, `failure`, `cancel`, `error` | ✅ |
 | errors | `String` | details about the failure, when applicable | |
 
 ### [`guardrail triggered`](conformance/guardrail_triggered.json)
@@ -314,8 +393,10 @@ action and reached a decision.
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | guardrailName | `String` | The name of the guardrail/policy check | ✅ |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | ✅ |
-| action | `String (enum)` | what the guardrail decided to do | `allow`, `flag`, `block` |
-| severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, `critical` |
+| action | `String (enum)` | Decision: `allow`, `flag`, `block` | ✅ |
+| evaluatedSubject | `Object` | Evaluated subject reference (`id`, `type`, optional `source`) | ✅ |
+| stage | `String (enum)` | Evaluation phase: `input`, `output`, `tool` | ✅ |
+| severity | `String (enum)` | Finding severity: `low`, `medium`, `high`, `critical` | |
 | reason | `String` | human-readable explanation of the check's decision | |
 | url | `URI` | url to the `guardrail` evaluation | |
 
@@ -336,6 +417,8 @@ only care about hard blocks.
 | source | `URI-Reference` | See [source](spec.md#source-subject) | |
 | guardrailName | `String` | The name of the guardrail/policy check | ✅ |
 | agentRun | `Object` ([`agentRun`](#agentrun)) | The `agentRun` this check was evaluated within | ✅ |
-| severity | `String (enum)` | severity of the finding, when applicable | `low`, `medium`, `high`, `critical` |
+| evaluatedSubject | `Object` | Evaluated subject reference (`id`, `type`, optional `source`) | ✅ |
+| stage | `String (enum)` | Evaluation phase: `input`, `output`, `tool` | ✅ |
+| severity | `String (enum)` | Finding severity: `low`, `medium`, `high`, `critical` | |
 | reason | `String` | human-readable explanation of the check's decision | |
 | url | `URI` | url to the `guardrail` evaluation | |
