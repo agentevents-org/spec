@@ -1,16 +1,17 @@
 # AgentEvents
 
-AgentEvents is a common specification for describing the runtime activity of AI
-agents — agent runs, tool calls, and model invocations — as
-[CloudEvents](https://github.com/cloudevents/spec).
+AgentEvents is a common specification for describing AI agent lifecycle activity
+across harnesses, tools, model services, governance services, and management
+platforms as [CloudEvents](https://github.com/cloudevents/spec).
 
 ## Background
 
-AI agent frameworks (LangChain, CrewAI, AutoGen, the OpenAI Agents SDK, the
-Claude Agent SDK, and many in-house systems) each emit their own shape of
-telemetry for what an agent did: which tools it called, which model it
-invoked, whether a run succeeded. OpenTelemetry already defines GenAI
-conventions for observing much of this activity. AgentEvents complements
+Agent harnesses, frameworks, gateways, and policy services each describe
+their own part of an agent's activity: which tools it called, which model it
+invoked, which decisions governed its actions, and whether a run succeeded.
+Management platforms need to connect that activity across component boundaries.
+OpenTelemetry already defines GenAI conventions for observing much of this
+activity. AgentEvents complements
 those conventions with a CloudEvents vocabulary that applications can
 subscribe to and process independently: for example, a live run interface
 consuming lifecycle updates, or a policy/evaluation pipeline consuming
@@ -42,6 +43,8 @@ The specification is a work in progress. Key documents:
 - [`conformance/`](conformance) — example event payloads, one per event type,
   used to validate the schemas and as SDK test fixtures.
 - [`otel.md`](otel.md) — OpenTelemetry mappings and trace correlation.
+- [`Lifecycle contract plan`](proposals/lifecycle-contracts.md) — proposed
+  connection points and contract work, grounded in AAIF project interfaces.
 - [`conformance/scenarios/`](conformance/scenarios/) — a checked integration scenario.
 - [`governance.md`](governance.md) — how decisions get made.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — local validation and contribution process.
@@ -51,8 +54,10 @@ The specification is a work in progress. Key documents:
 This is an early, `0.1.0-draft` specification. Expect breaking changes.
 The core vocabulary covers `agentRun`, `toolCall`, `modelInvocation`,
 `agentHandoff`, and `guardrail`, and events can be connected with causal
-[links](links.md). Planned next steps: a broader vocabulary (memory
-operations, human-in-the-loop approvals) and reference SDKs.
+[links](links.md). The [lifecycle contract plan](proposals/lifecycle-contracts.md)
+sets out proposed support for harness, governance, approval, delegation,
+context, and environment boundaries, with token usage as an optional extension.
+The plan does not add event types or change the current schemas.
 
 ## License
 
