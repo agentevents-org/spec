@@ -309,9 +309,10 @@ events defined in the [vocabulary](#vocabulary):
 
 - Type: [`String`][typesystem]
 - Description: Identifier for a chain of related AgentEvents, as defined in
-  the [links spec](links.md). Typically used to group all events belonging
-  to the same end-to-end trace, for example one user request that spans
-  multiple `agentRun`s connected by `agentHandoff`s.
+  the [links spec](links.md). Typically used to group activity for one user
+  request that spans multiple `agentRun`s connected by `agentHandoff`s.
+  A chain may span multiple OTel traces; membership does not imply complete
+  history or provide trace context.
 
 - Constraints:
   - OPTIONAL

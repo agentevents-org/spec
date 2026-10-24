@@ -60,6 +60,12 @@ extension preserves the starting transmission's trace context; transport
 headers can describe individual hops. Intermediaries MUST NOT replace the
 extension with each hop's trace context.
 
+This extension correlates the event's transmission with a trace. Its span
+ID does not necessarily identify the `agentRun`, `toolCall` or
+`modelInvocation` described by the payload. This draft does not define a
+separate field for the subject's execution span ID; adapters must not assume
+that the transmission span and subject span are the same.
+
 A producer MAY reuse a W3C trace ID as `chainId` when the scopes and lifetimes
 coincide. This does not make `chainId` a trace context or provide a span ID.
 When a chain spans several traces, retain its independent identity and

@@ -15,11 +15,13 @@ description: >
 AI agent execution is inherently causal: a `modelInvocation` decides to make
 a `toolCall`; a `toolCall`'s result feeds back into the next
 `modelInvocation`; one `agentRun` may hand off to another agent's run via
-`agentHandoff`. The [`agentRun` reference](core.md) embedded in `toolCall`,
-`modelInvocation`, and `agentHandoff` subjects connects a child event to its
-parent run, but not one event to the specific event that caused it, and not
-events across agent handoffs into a single end-to-end trace. Links, and the
-[`chainId`](spec.md#chainid) context attribute, close that gap.
+`agentHandoff`. The [`agentRun` reference](core.md) embedded in `toolCall`
+and `modelInvocation` subjects identifies their containing run;
+`agentHandoff` uses `sourceAgentRun` and, when known, `targetAgentRun`.
+These references identify runs, rather than the specific events that caused
+an activity. Links express event relationships, while the
+[`chainId`](spec.md#chainid) context attribute groups related activity across
+runs and handoffs.
 
 This document defines the normative shape of the `links` context attribute
 introduced in [`spec.md`](spec.md#links). It is scoped down from
@@ -66,13 +68,16 @@ possible (a chain may have gaps, branches, or simply stop being observed).
 
 ## chainId
 
-[`chainId`](spec.md#chainid) groups all AgentEvents belonging to the same
-end-to-end trace. Typically a producer generates one `chainId` per top-level
-`agentRun` and propagates it to every event caused by that run, including
-across `agentHandoff` boundaries into other agents' runs — this is what lets
-a consumer reconstruct a full multi-agent trace even though each `agentRun`
-already scopes its own `toolCall`s and `modelInvocation`s independently via
-the embedded `agentRun` reference.
+[`chainId`](spec.md#chainid) groups AgentEvents belonging to the same
+application-defined chain of activity. Typically a producer generates one
+`chainId` per top-level `agentRun` and propagates it to every event caused by
+that run, including
+across `agentHandoff` boundaries into other agents' runs. This lets consumers
+group observed activity across runtimes, while each `agentRun` scopes its own
+`toolCall`s and `modelInvocation`s via the embedded `agentRun` reference.
+Chain membership does not establish causal order, complete receipt, or OTel
+trace identity. A chain may span multiple traces; see
+[trace correlation](otel.md#optional-trace-correlation-profile).
 
 If an event has no `chainId`, consumers MUST NOT assume it is related to any
 other event by chain; `links` (below) may still connect it explicitly.
