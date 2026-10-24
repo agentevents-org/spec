@@ -14,4 +14,6 @@ recorded here; permissions and service configuration need separate verification.
       already support local/offline distribution.
 - [x] Publish the maintainer-provided private security contact:
       `cameron@agent-events.dev` in [SECURITY.md](SECURITY.md).
+- [x] Publish the private conduct-reporting contact:
+      `cameron@agent-events.dev` in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - [x] Check remote CI passes after the draft changes are pushed.
