@@ -31,27 +31,27 @@ to use interim custom events at a large scale.
 
 The following features of the specification are related to custom events:
 
-- **The `dev.agenteventsx` event-type namespace**: reserved for events that
+- **The `dev.agent-events.x` event-type namespace**: reserved for events that
   are compliant with the AgentEvents specification, whose subject structure
   and semantics are defined outside of AgentEvents.
 - **The [`schemaUri`](../spec.md#schemauri) property in the `context`**:
   events may supply their schema URI via this `context` property. Events
   must **always** validate against the AgentEvents official
   [custom schema](schema.json) too.
-- **The [`dev.agenteventsx` jsonschema](schema.json)**: any event of type
-  `dev.agenteventsx.*` must respect this schema as well as any additional
+- **The [`dev.agent-events.x` jsonschema](schema.json)**: any event of type
+  `dev.agent-events.x.*` must respect this schema as well as any additional
   schema supplied via `schemaUri`.
-- **The `subject` format for `dev.agenteventsx` events**: subjects must be in
+- **The `subject` format for `dev.agent-events.x` events**: subjects must be in
   the format `<framework-name>-<subject-name>` to avoid event-type conflicts
   across frameworks.
-- **The [registry](registry.md)**: maintainers of `dev.agenteventsx`
+- **The [registry](registry.md)**: maintainers of `dev.agent-events.x`
   specifications are encouraged to add their specification to the shared
   [registry](registry.md).
 
 ### Naming grammar
 
 The type format is
-`dev.agenteventsx.<framework>-<subject>.<predicate>.<version>`.
+`dev.agent-events.x.<framework>-<subject>.<predicate>.<version>`.
 Framework names contain one or more ASCII alphanumeric segments separated
 by hyphens. The final hyphen separates the framework from the subject;
 subject and predicate names start with an ASCII letter and continue with
@@ -81,7 +81,7 @@ and enable bounded remote resolution only by explicit operator configuration.
 SDKs MUST expose refinement status separately from base-schema validity;
 an unavailable schema is unresolved, not successfully validated.
 
-When consuming (parsing) an event with a `dev.agenteventsx` type, SDKs will
+When consuming (parsing) an event with a `dev.agent-events.x` type, SDKs will
 return an object that is identical in structure for all events, and which
 includes an unparsed blob for the `subject.content` part. SDKs MAY provide a
 way for users to register a function to parse the `subject.content` of
@@ -126,7 +126,7 @@ Original framework-specific event:
 }
 ```
 
-Corresponding AgentEvent using a `dev.agenteventsx.*` type:
+Corresponding AgentEvent using a `dev.agent-events.x.*` type:
 
 ```json
 {
@@ -134,7 +134,7 @@ Corresponding AgentEvent using a `dev.agenteventsx.*` type:
     "specversion": "0.1.0-draft",
     "id": "271069a8-fc18-44f1-b38f-9d70a1695819",
     "source": "/staging/langchain-app",
-    "type": "dev.agenteventsx.langchain-callback.finished.0.1.0",
+    "type": "dev.agent-events.x.langchain-callback.finished.0.1.0",
     "timestamp": "2026-08-05T17:31:05.315384Z",
     "schemaUri": "https://myorg.com/agenteventsx/schema/langchain-callback/finished/0_1_0"
   },

@@ -192,32 +192,31 @@ events defined in the [vocabulary](#vocabulary):
   *predicate* and *version*. Valid event types are defined in the
   [vocabulary](#vocabulary).
 
-  Core event types MUST be prefixed with `dev.agentevents.`. One occurrence
+  Core event types MUST be prefixed with `dev.agent-events.`. One occurrence
   may have multiple events associated, as long as they have different event
   types. *Versions* are semantic in the *major.minor.patch* format (`M.m.p`).
 
-  In addition to `dev.agentevents.`, event types prefixed with
-  `dev.agenteventsx.` can be defined in specifications outside of
+  In addition to `dev.agent-events.`, event types prefixed with
+  `dev.agent-events.x.` can be defined in specifications outside of
   AgentEvents. Events that use these event types are known as
   ["custom events"](custom/README.md).
 
-  The `dev.agentevents` and `dev.agenteventsx` prefixes are fixed vocabulary
-  identifiers reserved by this specification. They are not derived from a
-  domain name by reverse-DNS convention; the project domain is
-  `agent-events.dev`.
+  Both prefixes follow the reverse-DNS convention for the project domain,
+  `agent-events.dev`. The subject name `x` is reserved for custom events and
+  MUST NOT be used for a core subject.
 
 - Constraints:
   - REQUIRED
-  - `dev.agentevents.` types MUST be defined in the [vocabulary](#vocabulary)
-  - `dev.agenteventsx.` types SHOULD be defined in a third party
+  - `dev.agent-events.` types MUST be defined in the [vocabulary](#vocabulary)
+  - `dev.agent-events.x.` types SHOULD be defined in a third party
     specification
 
 - Examples:
-  - `dev.agentevents.agentrun.started.0.1.0-draft`
-  - `dev.agentevents.toolcall.finished.0.1.0-draft`
-  - `dev.agentevents.<subject>.<predicate>.M.m.p`
-  - `dev.agenteventsx.langchain-callback.finished.0.1.0`
-  - `dev.agenteventsx.<framework>-<subject>.<predicate>.M.m.p`
+  - `dev.agent-events.agentrun.started.0.1.0-draft`
+  - `dev.agent-events.toolcall.finished.0.1.0-draft`
+  - `dev.agent-events.<subject>.<predicate>.M.m.p`
+  - `dev.agent-events.x.langchain-callback.finished.0.1.0`
+  - `dev.agent-events.x.<framework>-<subject>.<predicate>.M.m.p`
 
 #### source (context)
 
@@ -380,7 +379,7 @@ This is an example of a full AgentEvent context, rendered in JSON format:
     "specversion": "0.1.0-draft",
     "id": "A234-1234-1234",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.agentrun.started.0.1.0-draft",
+    "type": "dev.agent-events.agentrun.started.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:00Z"
   }
 }
@@ -423,7 +422,7 @@ events defined in the [vocabulary](#vocabulary):
 
 - Example:
   - Considering the event type
-    `dev.agentevents.toolcall.started.0.1.0-draft`, an example of subject,
+    `dev.agent-events.toolcall.started.0.1.0-draft`, an example of subject,
     serialized as JSON, is:
 
     ```json
@@ -468,7 +467,7 @@ JSON.
     "specversion": "0.1.0-draft",
     "id": "A234-1234-1234",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+    "type": "dev.agent-events.toolcall.started.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:00Z"
   },
   "subject": {

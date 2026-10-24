@@ -2,7 +2,7 @@
   "specversion": "1.0",
   "id": "4",
   "source": "/runtime/a",
-  "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+  "type": "dev.agent-events.toolcall.started.0.1.0-draft",
   "subject": "search-1",
   "time": "2026-08-05T17:31:06Z",
   "datacontenttype": "application/json",
@@ -11,7 +11,7 @@
       "specversion": "0.1.0-draft",
       "id": "4",
       "source": "/runtime/a",
-      "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+      "type": "dev.agent-events.toolcall.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:06Z",
       "chainId": "example-chain",
       "links": [

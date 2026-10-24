@@ -12,9 +12,9 @@
         "type": {
           "type": "string",
           "enum": [
-            "dev.agentevents.guardrail.blocked.0.1.0-draft"
+            "dev.agent-events.guardrail.blocked.0.1.0-draft"
           ],
-          "default": "dev.agentevents.guardrail.blocked.0.1.0-draft"
+          "default": "dev.agent-events.guardrail.blocked.0.1.0-draft"
         }
       }
     },

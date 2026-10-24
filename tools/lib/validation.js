@@ -32,7 +32,7 @@ const subjectKey = (subject, source) => JSON.stringify([subject.source ?? source
 // JSON Schema only: what any conforming 2020-12 validator can check.
 export function validateSchema(event) {
   const type = event?.context?.type;
-  const validate = typeof type === "string" && type.startsWith("dev.agenteventsx.")
+  const validate = typeof type === "string" && type.startsWith("dev.agent-events.x.")
     ? custom : eventValidators.get(type);
   if (!validate) throw new Error(`Unsupported event type/version: ${type}`);
   if (!validate(event)) throw new Error(ajv.errorsText(validate.errors, { separator: "\n" }));
@@ -44,7 +44,7 @@ export function validateEvent(event) {
   validateSchema(event);
   const type = event.context.type;
   const c = event.subject.content;
-  if (type.startsWith("dev.agentevents.modelinvocation.finished.") &&
+  if (type.startsWith("dev.agent-events.modelinvocation.finished.") &&
       [c.promptTokens, c.completionTokens, c.totalTokens].every((n) => n !== undefined) &&
       c.promptTokens + c.completionTokens !== c.totalTokens) {
     throw new Error("totalTokens must equal promptTokens + completionTokens");

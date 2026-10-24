@@ -3,7 +3,7 @@
     "specversion": "0.1.0-draft",
     "id": "g890-7890-7890",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.guardrail.triggered.0.1.0-draft",
+    "type": "dev.agent-events.guardrail.triggered.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:22Z",
     "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359"
   },

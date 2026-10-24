@@ -7,12 +7,8 @@ recorded here; permissions and service configuration need separate verification.
       [CODEOWNERS](CODEOWNERS).
 - [ ] Verify `@link108` has repository permissions to review, merge and release.
 - [x] Record the project domain confirmed by the maintainer: `agent-events.dev`.
-      Schema identifiers use this domain; event-type namespaces retain
-      `dev.agentevents` and `dev.agenteventsx` as vocabulary identifiers.
-- [ ] Decide whether to keep the `dev.agentevents` prefixes. `agentevents.dev`
-      is held by a third party, so the prefix reads as their domain by
-      reverse-DNS convention; [spec.md](spec.md#type-context) disclaims this.
-      Renaming is cheapest before the first release.
+      Schema identifiers and the `dev.agent-events` / `dev.agent-events.x`
+      event-type prefixes both use this domain.
 - [ ] Decide where versioned schemas will be served. Repository schemas
       already support local/offline distribution.
 - [x] Publish the maintainer-provided private security contact:

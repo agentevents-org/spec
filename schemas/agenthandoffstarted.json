@@ -12,9 +12,9 @@
         "type": {
           "type": "string",
           "enum": [
-            "dev.agentevents.agenthandoff.started.0.1.0-draft"
+            "dev.agent-events.agenthandoff.started.0.1.0-draft"
           ],
-          "default": "dev.agentevents.agenthandoff.started.0.1.0-draft"
+          "default": "dev.agent-events.agenthandoff.started.0.1.0-draft"
         }
       }
     },

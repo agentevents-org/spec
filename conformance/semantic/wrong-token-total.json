@@ -3,7 +3,7 @@
     "specversion": "0.1.0-draft",
     "id": "3",
     "source": "/runtime/a",
-    "type": "dev.agentevents.modelinvocation.finished.0.1.0-draft",
+    "type": "dev.agent-events.modelinvocation.finished.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:05Z",
     "chainId": "example-chain",
     "links": [

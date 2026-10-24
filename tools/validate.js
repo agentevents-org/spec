@@ -36,7 +36,7 @@ for (const [pattern, validate, invalid, precondition] of [
       const fixture = loadJSON(file);
       if (pattern === "conformance/*.json") {
         const [subject, predicate] = basename(file, ".json").split("_");
-        if (!fixture.context?.type?.startsWith(`dev.agentevents.${subject}.${predicate}.`)) {
+        if (!fixture.context?.type?.startsWith(`dev.agent-events.${subject}.${predicate}.`)) {
           throw new Error("Fixture filename does not match its event type");
         }
       }

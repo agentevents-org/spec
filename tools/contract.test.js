@@ -37,14 +37,14 @@ test("non-JSON custom data requires canonical base64", () => {
 for (const name of ["openai-agents-handoff", "crewai-task_step"]) {
   for (const version of ["0.1.0-draft", "1.0.0-rc.1", "1.0.0+build.1", "1.2.3-0.alpha+build.01"]) {
     test(`custom grammar accepts ${name} / ${version}`, () => {
-      const e = custom(); e.context.type = `dev.agenteventsx.${name}.finished.${version}`;
+      const e = custom(); e.context.type = `dev.agent-events.x.${name}.finished.${version}`;
       assert.doesNotThrow(() => validateEvent(e));
     });
   }
 }
 test("custom grammar rejects invalid SemVer", () => {
   for (const version of ["01.2.3", "1.02.3", "1.2.03", "1.2.3-01", "1.2.3-", "1.2.3+", "1.2.3\n"]) {
-    const e = custom(); e.context.type = `dev.agenteventsx.openai-agents-handoff.finished.${version}`;
+    const e = custom(); e.context.type = `dev.agent-events.x.openai-agents-handoff.finished.${version}`;
     assert.throws(() => validateEvent(e));
   }
 });

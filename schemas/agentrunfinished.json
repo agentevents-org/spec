@@ -12,9 +12,9 @@
         "type": {
           "type": "string",
           "enum": [
-            "dev.agentevents.agentrun.finished.0.1.0-draft"
+            "dev.agent-events.agentrun.finished.0.1.0-draft"
           ],
-          "default": "dev.agentevents.agentrun.finished.0.1.0-draft"
+          "default": "dev.agent-events.agentrun.finished.0.1.0-draft"
         }
       }
     },

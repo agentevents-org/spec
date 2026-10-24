@@ -216,7 +216,7 @@ preconditions (available capacity, rate limits, upstream dependencies, etc.)
 to be fulfilled before actually starting. Adopters whose agent runtime
 starts runs synchronously can choose to skip this event entirely.
 
-- Event Type: __`dev.agentevents.agentrun.queued.0.1.0-draft`__
+- Event Type: __`dev.agent-events.agentrun.queued.0.1.0-draft`__
 - Predicate: queued
 - Subject: [`agentRun`](#agentrun)
 
@@ -233,7 +233,7 @@ starts runs synchronously can choose to skip this event entirely.
 
 An `agentRun` has started and is running.
 
-- Event Type: __`dev.agentevents.agentrun.started.0.1.0-draft`__
+- Event Type: __`dev.agent-events.agentrun.started.0.1.0-draft`__
 - Predicate: started
 - Subject: [`agentRun`](#agentrun)
 
@@ -250,7 +250,7 @@ An `agentRun` has started and is running.
 
 An `agentRun` has finished, successfully or not.
 
-- Event Type: __`dev.agentevents.agentrun.finished.0.1.0-draft`__
+- Event Type: __`dev.agent-events.agentrun.finished.0.1.0-draft`__
 - Predicate: finished
 - Subject: [`agentRun`](#agentrun)
 
@@ -269,7 +269,7 @@ An `agentRun` has finished, successfully or not.
 
 A `toolCall` has started and is running.
 
-- Event Type: __`dev.agentevents.toolcall.started.0.1.0-draft`__
+- Event Type: __`dev.agent-events.toolcall.started.0.1.0-draft`__
 - Predicate: started
 - Subject: [`toolCall`](#toolcall)
 
@@ -285,7 +285,7 @@ A `toolCall` has started and is running.
 
 A `toolCall` has finished, successfully or not.
 
-- Event Type: __`dev.agentevents.toolcall.finished.0.1.0-draft`__
+- Event Type: __`dev.agent-events.toolcall.finished.0.1.0-draft`__
 - Predicate: finished
 - Subject: [`toolCall`](#toolcall)
 
@@ -303,7 +303,7 @@ A `toolCall` has finished, successfully or not.
 
 A `modelInvocation` has started and is running.
 
-- Event Type: __`dev.agentevents.modelinvocation.started.0.1.0-draft`__
+- Event Type: __`dev.agent-events.modelinvocation.started.0.1.0-draft`__
 - Predicate: started
 - Subject: [`modelInvocation`](#modelinvocation)
 
@@ -320,7 +320,7 @@ A `modelInvocation` has started and is running.
 
 A `modelInvocation` has finished, successfully or not.
 
-- Event Type: __`dev.agentevents.modelinvocation.finished.0.1.0-draft`__
+- Event Type: __`dev.agent-events.modelinvocation.finished.0.1.0-draft`__
 - Predicate: finished
 - Subject: [`modelInvocation`](#modelinvocation)
 
@@ -344,7 +344,7 @@ A `modelInvocation` has finished, successfully or not.
 An `agentHandoff` has started; the source agent has decided to delegate to
 another agent, which may not yet have accepted or begun running.
 
-- Event Type: __`dev.agentevents.agenthandoff.started.0.1.0-draft`__
+- Event Type: __`dev.agent-events.agenthandoff.started.0.1.0-draft`__
 - Predicate: started
 - Subject: [`agentHandoff`](#agenthandoff)
 
@@ -362,7 +362,7 @@ another agent, which may not yet have accepted or begun running.
 An `agentHandoff` has finished: the target agent has accepted (and
 typically started its own `agentRun`) or the handoff failed.
 
-- Event Type: __`dev.agentevents.agenthandoff.finished.0.1.0-draft`__
+- Event Type: __`dev.agent-events.agenthandoff.finished.0.1.0-draft`__
 - Predicate: finished
 - Subject: [`agentHandoff`](#agenthandoff)
 
@@ -383,7 +383,7 @@ typically started its own `agentRun`) or the handoff failed.
 A guardrail/policy check evaluated an agent's input, output, or proposed
 action and reached a decision.
 
-- Event Type: __`dev.agentevents.guardrail.triggered.0.1.0-draft`__
+- Event Type: __`dev.agent-events.guardrail.triggered.0.1.0-draft`__
 - Predicate: triggered
 - Subject: [`guardrail`](#guardrail)
 
@@ -407,7 +407,7 @@ proposed action from proceeding. Emitted in addition to (not instead of) a
 corresponding `triggered` event with `action: "block"`, for consumers that
 only care about hard blocks.
 
-- Event Type: __`dev.agentevents.guardrail.blocked.0.1.0-draft`__
+- Event Type: __`dev.agent-events.guardrail.blocked.0.1.0-draft`__
 - Predicate: blocked
 - Subject: [`guardrail`](#guardrail)
 

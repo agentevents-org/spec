@@ -12,9 +12,9 @@
         "type": {
           "type": "string",
           "enum": [
-            "dev.agentevents.modelinvocation.finished.0.1.0-draft"
+            "dev.agent-events.modelinvocation.finished.0.1.0-draft"
           ],
-          "default": "dev.agentevents.modelinvocation.finished.0.1.0-draft"
+          "default": "dev.agent-events.modelinvocation.finished.0.1.0-draft"
         }
       }
     },

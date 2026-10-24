@@ -4,7 +4,7 @@
       "specversion": "0.1.0-draft",
       "id": "0",
       "source": "/runtime/a",
-      "type": "dev.agentevents.agentrun.queued.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.queued.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:00Z",
       "chainId": "example-chain"
     },
@@ -20,7 +20,7 @@
       "specversion": "0.1.0-draft",
       "id": "1",
       "source": "/runtime/a",
-      "type": "dev.agentevents.agentrun.started.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:01Z",
       "chainId": "example-chain",
       "links": [
@@ -45,7 +45,7 @@
       "specversion": "0.1.0-draft",
       "id": "2",
       "source": "/runtime/a",
-      "type": "dev.agentevents.modelinvocation.started.0.1.0-draft",
+      "type": "dev.agent-events.modelinvocation.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:02Z",
       "chainId": "example-chain",
       "links": [
@@ -75,7 +75,7 @@
       "specversion": "0.1.0-draft",
       "id": "3",
       "source": "/runtime/a",
-      "type": "dev.agentevents.modelinvocation.finished.0.1.0-draft",
+      "type": "dev.agent-events.modelinvocation.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:05Z",
       "chainId": "example-chain",
       "links": [
@@ -109,7 +109,7 @@
       "specversion": "0.1.0-draft",
       "id": "4",
       "source": "/runtime/a",
-      "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+      "type": "dev.agent-events.toolcall.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:06Z",
       "chainId": "example-chain",
       "links": [
@@ -138,7 +138,7 @@
       "specversion": "0.1.0-draft",
       "id": "5",
       "source": "/runtime/a",
-      "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+      "type": "dev.agent-events.toolcall.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:06Z",
       "chainId": "example-chain",
       "links": [
@@ -167,7 +167,7 @@
       "specversion": "0.1.0-draft",
       "id": "1",
       "source": "/runtime/b",
-      "type": "dev.agentevents.agentrun.started.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:07Z",
       "chainId": "example-chain",
       "links": [
@@ -197,7 +197,7 @@
       "specversion": "0.1.0-draft",
       "id": "2",
       "source": "/runtime/b",
-      "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:10Z",
       "chainId": "example-chain",
       "links": [
@@ -227,7 +227,7 @@
       "specversion": "0.1.0-draft",
       "id": "6",
       "source": "/runtime/a",
-      "type": "dev.agentevents.toolcall.finished.0.1.0-draft",
+      "type": "dev.agent-events.toolcall.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:11Z",
       "chainId": "example-chain",
       "links": [
@@ -264,7 +264,7 @@
       "specversion": "0.1.0-draft",
       "id": "7",
       "source": "/runtime/a",
-      "type": "dev.agentevents.toolcall.finished.0.1.0-draft",
+      "type": "dev.agent-events.toolcall.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:12Z",
       "chainId": "example-chain",
       "links": [
@@ -293,7 +293,7 @@
       "specversion": "0.1.0-draft",
       "id": "8",
       "source": "/runtime/a",
-      "type": "dev.agentevents.agenthandoff.started.0.1.0-draft",
+      "type": "dev.agent-events.agenthandoff.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:13Z",
       "chainId": "example-chain",
       "links": [
@@ -330,7 +330,7 @@
       "specversion": "0.1.0-draft",
       "id": "1",
       "source": "/runtime/c",
-      "type": "dev.agentevents.agentrun.started.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.started.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:14Z",
       "chainId": "example-chain",
       "links": [
@@ -355,7 +355,7 @@
       "specversion": "0.1.0-draft",
       "id": "9",
       "source": "/runtime/a",
-      "type": "dev.agentevents.agenthandoff.finished.0.1.0-draft",
+      "type": "dev.agent-events.agenthandoff.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:15Z",
       "chainId": "example-chain",
       "links": [
@@ -396,7 +396,7 @@
       "specversion": "0.1.0-draft",
       "id": "2",
       "source": "/runtime/c",
-      "type": "dev.agentevents.guardrail.triggered.0.1.0-draft",
+      "type": "dev.agent-events.guardrail.triggered.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:16Z",
       "chainId": "example-chain",
       "links": [
@@ -433,7 +433,7 @@
       "specversion": "0.1.0-draft",
       "id": "3",
       "source": "/runtime/c",
-      "type": "dev.agentevents.guardrail.blocked.0.1.0-draft",
+      "type": "dev.agent-events.guardrail.blocked.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:16Z",
       "chainId": "example-chain",
       "links": [
@@ -468,7 +468,7 @@
       "specversion": "0.1.0-draft",
       "id": "4",
       "source": "/runtime/c",
-      "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:17Z",
       "chainId": "example-chain",
       "links": [
@@ -502,7 +502,7 @@
       "specversion": "0.1.0-draft",
       "id": "10",
       "source": "/runtime/a",
-      "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
+      "type": "dev.agent-events.agentrun.finished.0.1.0-draft",
       "timestamp": "2026-08-05T17:31:18Z",
       "chainId": "example-chain",
       "links": [

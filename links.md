@@ -147,7 +147,7 @@ A `toolCall.started` event that was triggered by a specific
     "id": "a234-1234-1234",
     "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+    "type": "dev.agent-events.toolcall.started.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:12Z",
     "links": [
       {
@@ -179,7 +179,7 @@ the handoff-finished fixture (`f789-6789-6789`):
     "id": "fb455028-a876-430e-a5ff-4b2ece77e827",
     "chainId": "7ff3f526-1a0e-4d35-8a4c-7d6295e97359",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.agentrun.finished.0.1.0-draft",
+    "type": "dev.agent-events.agentrun.finished.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:42Z",
     "links": [
       {

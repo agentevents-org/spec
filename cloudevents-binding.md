@@ -140,7 +140,7 @@ Full example of an AgentEvent transported through a CloudEvent in HTTP
 POST /sink HTTP/1.1
 Host: agentevents.example.com
 ce-specversion: 1.0
-ce-type: dev.agentevents.toolcall.started.0.1.0-draft
+ce-type: dev.agent-events.toolcall.started.0.1.0-draft
 ce-time: 2026-08-05T17:31:00Z
 ce-id: A234-1234-1234
 ce-source: /staging/my-agent-runtime
@@ -153,7 +153,7 @@ Content-Length: nnnn
     "specversion": "0.1.0-draft",
     "id": "A234-1234-1234",
     "source": "/staging/my-agent-runtime",
-    "type": "dev.agentevents.toolcall.started.0.1.0-draft",
+    "type": "dev.agent-events.toolcall.started.0.1.0-draft",
     "timestamp": "2026-08-05T17:31:00Z"
   },
   "subject": {
